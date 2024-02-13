@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using shared_cookbook_api.Data.Entities;
 using SharedCookbookApi.Data.Entities;
 
 namespace SharedCookbookApi.Data.Maps;
@@ -37,6 +38,13 @@ public class RecipeMap : IEntityTypeConfiguration<Recipe>
         builder.Property(r => r.VideoPath)
             .HasMaxLength(255)
             .HasColumnName("video_path");
+        builder.Property(r => r.PreparationTimeInMinutes)
+            .HasColumnName("preparation_time_in_minutes");
+        builder.Property(r => r.CookingTimeInMinutes)
+            .HasColumnName("cooking_time_in_minutes");
+        builder.Property(r => r.BakingTimeInMinutes)
+            .HasColumnName("baking_time_in_minutes");
+
 
         builder.HasOne(r => r.Cookbook)
             .WithMany(c => c.Recipes)
@@ -60,16 +68,20 @@ public class RecipeMap : IEntityTypeConfiguration<Recipe>
             .HasForeignKey(rc => rc.RecipeId)
             .HasConstraintName("FK_recipe_comment__recipe_id");
         builder.HasMany(r => r.RecipeDirections)
-            .WithOne(ic => ic.Recipe)
-            .HasForeignKey(cn => cn.RecipeId)
+            .WithOne(rd => rd.Recipe)
+            .HasForeignKey(rd => rd.RecipeId)
             .HasConstraintName("FK_recipe_direction__recipe_id");
         builder.HasMany(r => r.RecipeIngredients)
-            .WithOne(ic => ic.Recipe)
-            .HasForeignKey(cn => cn.RecipeId)
+            .WithOne(ri => ri.Recipe)
+            .HasForeignKey(ri => ri.RecipeId)
             .HasConstraintName("FK_recipe_ingredient__recipe_id");
         builder.HasMany(r => r.RecipeRatings)
-            .WithOne(ic => ic.Recipe)
-            .HasForeignKey(cn => cn.RecipeId)
+            .WithOne(rr => rr.Recipe)
+            .HasForeignKey(rr => rr.RecipeId)
             .HasConstraintName("FK_recipe_rating__recipe_id");
+        builder.HasOne(r => r.Nutrition)
+            .WithOne(n => n.Recipe)
+            .HasForeignKey<RecipeNutrition>(n => n.RecipeId)
+            .HasConstraintName("FK_recipe_nutrition__recipe_id");
     }
 }

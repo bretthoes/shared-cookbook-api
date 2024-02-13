@@ -1,4 +1,6 @@
-﻿namespace SharedCookbookApi.Data.Entities;
+﻿using shared_cookbook_api.Data.Entities;
+
+namespace SharedCookbookApi.Data.Entities;
 
 public class Recipe
 {
@@ -16,10 +18,19 @@ public class Recipe
 
     public string? VideoPath { get; set; }
 
+    public int? PreparationTimeInMinutes { get; set; }
+
+    public int? CookingTimeInMinutes { get; set; }
+
+    public int? BakingTimeInMinutes { get; set; }
+
+    public int? Servings {  get; set; }
 
     public required virtual Cookbook Cookbook { get; set; }
 
     public virtual Person? Author { get; set; }
+
+    public virtual RecipeNutrition? Nutrition { get; set; }
 
     public virtual ICollection<CookbookNotification> CookbookNotifications { get; set; } = [];
 
