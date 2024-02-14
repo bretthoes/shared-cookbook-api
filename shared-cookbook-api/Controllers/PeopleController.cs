@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using shared_cookbook_api.Data.Dtos;
 using SharedCookbookApi.Data.Entities;
 using SharedCookbookApi.Repositories;
 
@@ -16,28 +17,28 @@ public class PeopleController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Person>> PostPerson(RegisterDto registerDto)
+    public async Task<ActionResult<PersonDto>> PostPerson(RegisterDto registerDto)
     {
-        if (registerDto == null)
+        if (registerDto is null)
         {
             return BadRequest();
         }
 
-        var person = await _personRepository.CreatePerson(registerDto);
+        var personDto = await _personRepository.CreatePerson(registerDto);
 
-        return person == null
+        return personDto is null
             ? BadRequest()
-            : CreatedAtAction(nameof(GetPerson), new { id = person.PersonId }, person);
+            : CreatedAtAction(nameof(GetPerson), new { id = personDto.PersonId }, personDto);
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Person>> GetPerson(int id)
+    public async Task<ActionResult<PersonDto>> GetPerson(int id)
     {
-        var person = await _personRepository.GetPerson(id);
+        var personDto = await _personRepository.GetPerson(id);
 
-        return person == null
+        return personDto is null
             ? NotFound()
-            : Ok(person);
+            : Ok(personDto);
     }
 
 
@@ -59,9 +60,9 @@ public class PeopleController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeletePerson(int id)
     {
-        var person = await GetPerson(id);
+        var personDto = await GetPerson(id);
 
-        if (person == null)
+        if (personDto is null)
         {
             return NotFound();
         }
@@ -76,25 +77,12 @@ public class PeopleController : ControllerBase
     // authentication endpoints
 
     [HttpPost("login")]
-    public async Task<ActionResult<Person>> Login(LoginDto loginDto)
+    public async Task<ActionResult<PersonDto>> Login(LoginDto loginDto)
     {
-        var person = await _personRepository.Login(loginDto);
+        var personDto = await _personRepository.Login(loginDto);
 
-        return person == null
+        return personDto is null
             ? BadRequest()
-            : CreatedAtAction(nameof(GetPerson), new { id = person.PersonId }, person);
+            : CreatedAtAction(nameof(GetPerson), new { id = personDto.PersonId }, personDto);
     }
-}
-
-// TODO refactor to separate folder
-public class LoginDto
-{
-    public required string Email { get; set; }
-    public required string Password { get; set; }
-}
-
-public class RegisterDto
-{
-    public required string Email { get; set; }
-    public required string Password { get; set; }
 }

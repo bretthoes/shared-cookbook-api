@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using shared_cookbook_api.Data.Dtos.MappingProfiles;
 using SharedCookbookApi.Data;
 using SharedCookbookApi.Extensions;
 using SharedCookbookApi.Repositories;
@@ -23,6 +24,8 @@ builder.Services.AddDbContext<SharedCookbookContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
+builder.Services.AddAutoMapper(typeof(PersonMappings));
 
 var app = builder.Build();
 

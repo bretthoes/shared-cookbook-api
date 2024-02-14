@@ -1,5 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SharedCookbookApi.Controllers;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using shared_cookbook_api.Data.Dtos;
 using SharedCookbookApi.Data;
 using SharedCookbookApi.Data.Entities;
 using SharedCookbookApi.Services;
@@ -11,14 +12,16 @@ public class PersonRepository : IPersonRepository
 
     private readonly SharedCookbookContext _context;
     private readonly IAuthService _authService;
+    private readonly IMapper _mapper;
 
-    public PersonRepository(SharedCookbookContext context, IAuthService authService)
+    public PersonRepository(SharedCookbookContext context, IAuthService authService, IMapper mapper)
     {
         _context = context;
         _authService = authService;
+        _mapper = mapper;
     }
 
-    public async Task<Person?> CreatePerson(RegisterDto registerDto)
+    public async Task<PersonDto?> CreatePerson(RegisterDto registerDto)
     {
         var person = new Person
         {
@@ -30,13 +33,17 @@ public class PersonRepository : IPersonRepository
 
         _context.People.Add(person);
         return await _context.SaveChangesAsync() >= 0
-            ? person 
+            ? _mapper.Map<PersonDto>(person)
             : null;
     }
 
-    public async Task<Person?> GetPerson(int id)
+    public async Task<PersonDto?> GetPerson(int id)
     {
-        return await _context.People.FindAsync(id);
+        var person = await _context.People.FindAsync(id);
+
+        return person is null
+            ? null
+            : _mapper.Map<PersonDto>(person);
     }
 
     public async Task<bool> UpdatePerson(int id, Person person)
@@ -79,11 +86,11 @@ public class PersonRepository : IPersonRepository
     }
     
     // authentication endpoints
-    public async Task<Person?> Login(LoginDto loginDto)
+    public async Task<PersonDto?> Login(LoginDto loginDto)
     {
         var person = await GetPerson(loginDto.Email);
-        
-        if (person == null)
+
+        if (person is null)
         {
             // TODO if Email not found; return bad request
             return null;
@@ -94,7 +101,7 @@ public class PersonRepository : IPersonRepository
             person.PasswordHash ?? string.Empty);
         // TODO if result false, return unauthorized
         return result
-            ? person
+            ? _mapper.Map<PersonDto>(person)
             : null;
     }
 
@@ -105,6 +112,6 @@ public class PersonRepository : IPersonRepository
 
     private async Task<Person?> GetPerson(string email)
     {
-        return await _context.People.SingleAsync(p => p.Email == email);
+           return await _context.People.SingleOrDefaultAsync(p => p.Email == email);
     }
 }

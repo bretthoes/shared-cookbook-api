@@ -1,13 +1,14 @@
-﻿using SharedCookbookApi.Controllers;
+﻿using shared_cookbook_api.Data.Dtos;
+using SharedCookbookApi.Controllers;
 using SharedCookbookApi.Data.Entities;
 
 namespace SharedCookbookApi.Repositories;
 
 public interface IPersonRepository
 {
-    Task<Person?> CreatePerson(RegisterDto registerDto);
-    Task<Person?> GetPerson(int id);
+    Task<PersonDto?> CreatePerson(RegisterDto registerDto);
+    Task<PersonDto?> GetPerson(int id);
     Task<bool> UpdatePerson(int id, Person person);
     Task<bool> DeletePerson(int id);
-    Task<Person?> Login(LoginDto loginDto);
+    Task<PersonDto?> Login(LoginDto loginDto);
 }
