@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
 using shared_cookbook_api.Data.Dtos;
 using SharedCookbookApi.Data.Entities;
 using SharedCookbookApi.Repositories;
+using SharedCookbookApi.Services;
 
 namespace SharedCookbookApi.Controllers;
 
@@ -10,79 +13,146 @@ namespace SharedCookbookApi.Controllers;
 public class PeopleController : ControllerBase
 {
     private readonly IPersonRepository _personRepository;
+    private readonly IAuthService _authService;
+    private readonly IMapper _mapper;
 
-    public PeopleController(IPersonRepository personRepository)
+    public PeopleController(IPersonRepository personRepository, IAuthService authService, IMapper mapper)
     {
         _personRepository = personRepository;
+        _authService = authService;
+        _mapper = mapper;
     }
 
-    [HttpPost]
-    public async Task<ActionResult<PersonDto>> PostPerson(RegisterDto registerDto)
+    [HttpGet("{id:int}", Name = nameof(GetPerson))]
+    public ActionResult<PersonDto> GetPerson(int id)
     {
-        if (registerDto is null)
-        {
-            return BadRequest();
-        }
+        var person = _personRepository.GetSingle(id);
 
-        var personDto = await _personRepository.CreatePerson(registerDto);
-
-        return personDto is null
-            ? BadRequest()
-            : CreatedAtAction(nameof(GetPerson), new { id = personDto.PersonId }, personDto);
-    }
-
-    [HttpGet("{id}")]
-    public async Task<ActionResult<PersonDto>> GetPerson(int id)
-    {
-        var personDto = await _personRepository.GetPerson(id);
-
-        return personDto is null
+        return person is null
             ? NotFound()
-            : Ok(personDto);
+            : Ok(_mapper.Map<PersonDto>(person));
     }
 
-
-    [HttpPut("{id}")]
-    public async Task<IActionResult> PutPerson(int id, Person person)
+    [HttpPost(Name = nameof(AddPerson))]
+    public ActionResult<PersonDto> AddPerson(CreatePersonDto registerDto)
     {
-        if (id != person.PersonId)
+        if (registerDto == null || string.IsNullOrWhiteSpace(registerDto.Email) || string.IsNullOrWhiteSpace(registerDto.Password))
         {
             return BadRequest();
         }
 
-        bool updated = await _personRepository.UpdatePerson(id, person);
+        var personToAdd = _mapper.Map<Person>(registerDto);
+        personToAdd.PasswordHash = _authService.HashPassword(registerDto.Password);
 
-        return updated
-            ? NoContent()
-            : NotFound();
+        _personRepository.Add(personToAdd);
+
+
+        if (!_personRepository.Save())
+        {
+            return StatusCode(500);
+        }
+
+        var newPersonDto = _mapper.Map<PersonDto>(_personRepository.GetSingle(personToAdd.PersonId));
+
+        return newPersonDto is null
+            ? BadRequest()
+            : CreatedAtAction(nameof(GetPerson), new { id = newPersonDto.PersonId }, newPersonDto);
     }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeletePerson(int id)
+    [HttpPut]
+    [Route("{id:int}", Name = nameof(UpdatePerson))]
+    public ActionResult<PersonDto> UpdatePerson(int id, [FromBody] UpdatePersonDto updatePersonDto)
     {
-        var personDto = await GetPerson(id);
+        if (updatePersonDto == null)
+        {
+            return BadRequest();
+        }
 
-        if (personDto is null)
+        var existingPerson = _personRepository.GetSingle(id);
+
+        if (existingPerson == null)
         {
             return NotFound();
         }
 
-        bool deleted = await _personRepository.DeletePerson(id);
+        _mapper.Map(updatePersonDto, existingPerson);
+        _personRepository.Update(existingPerson);
 
-        return deleted
+        return _personRepository.Save()
             ? NoContent()
-            : NotFound();
+            : StatusCode(500);
     }
 
-    // authentication endpoints
-
-    [HttpPost("login")]
-    public async Task<ActionResult<PersonDto>> Login(LoginDto loginDto)
+    [HttpPatch("{id:int}", Name = nameof(PartiallyUpdatePerson))]
+    public ActionResult<PersonDto> PartiallyUpdatePerson(int id, [FromBody] JsonPatchDocument<UpdatePersonDto> patchDoc)
     {
-        var personDto = await _personRepository.Login(loginDto);
+        if (patchDoc == null)
+        {
+            return BadRequest();
+        }
 
-        return personDto is null
-            ? BadRequest()
-            : CreatedAtAction(nameof(GetPerson), new { id = personDto.PersonId }, personDto);
+        var existingPerson = _personRepository.GetSingle(id);
+
+        if (existingPerson == null)
+        {
+            return NotFound();
+        }
+
+        var updatePersonDto = _mapper.Map<UpdatePersonDto>(existingPerson);
+        patchDoc.ApplyTo(updatePersonDto);
+
+        TryValidateModel(updatePersonDto);
+
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        _mapper.Map(updatePersonDto, existingPerson);
+        _personRepository.Update(existingPerson);
+
+        return _personRepository.Save()
+            ? NoContent()
+            : StatusCode(500);
+    }
+
+    [HttpDelete]
+    [Route("{id:int}", Name = nameof(RemovePerson))]
+    public ActionResult RemovePerson(int id)
+    {
+        var person = _personRepository.GetSingle(id);
+
+        if (person == null)
+        {
+            return NotFound();
+        }
+
+        _personRepository.Delete(id);
+
+        return _personRepository.Save()
+            ? NoContent()
+            : StatusCode(500);
+    }
+
+    [HttpPost("login", Name = nameof(Login))]
+    public ActionResult<PersonDto> Login([FromBody] LoginDto loginDto)
+    {
+        if (loginDto == null || string.IsNullOrWhiteSpace(loginDto.Email) || string.IsNullOrWhiteSpace(loginDto.Password))
+        {
+            return BadRequest();
+        }
+
+        var person = _personRepository.GetSingleByEmail(loginDto.Email);
+        if (person == null)
+        {
+            return NotFound();
+        }
+
+        if (person.PasswordHash == null || !_authService.VerifyPassword(loginDto.Password, person.PasswordHash))
+        {
+            return Unauthorized();
+        }
+
+        return Ok(_mapper.Map<PersonDto>(person));
     }
 }

@@ -21,8 +21,7 @@ public class PersonMap : IEntityTypeConfiguration<Person>
             .IsRequired();
         builder.Property(p => p.DisplayName)
             .HasMaxLength(255)
-            .HasColumnName("display_name")
-            .IsRequired();
+            .HasColumnName("display_name");
         builder.Property(p => p.Email)
             .HasMaxLength(255)
             .HasColumnName("email")

@@ -4,7 +4,7 @@ public class Person
 {
     public required int PersonId { get; set; }
 
-    public required string DisplayName { get; set; }
+    public string? DisplayName { get; set; }
 
     public required string Email { get; set; }
 

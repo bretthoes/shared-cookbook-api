@@ -1,6 +1,6 @@
 ﻿namespace shared_cookbook_api.Data.Dtos;
 
-public class RegisterDto
+public class CreatePersonDto
 {
     public required string Email { get; set; }
 

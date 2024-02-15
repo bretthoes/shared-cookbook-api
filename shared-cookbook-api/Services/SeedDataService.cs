@@ -27,7 +27,7 @@ public class SeedDataService : ISeedDataService
                 DisplayName = "Brett",
                 Email = "bretthoes@gmail.com",
                 ImagePath = "/images/image.jpg",
-                PasswordHash = "hashed_password",
+                PasswordHash = "password123",
                 PasswordSalt = "password_salt",
                 FirebaseUserUid = "firebase_user_uid",
             }

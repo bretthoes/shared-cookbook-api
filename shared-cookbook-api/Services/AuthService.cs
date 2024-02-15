@@ -1,7 +1,4 @@
-﻿using SharedCookbookApi.Controllers;
-using SharedCookbookApi.Data.Entities;
-using SharedCookbookApi.Extensions;
-using System;
+﻿using SharedCookbookApi.Extensions;
 
 namespace SharedCookbookApi.Services
 {
@@ -12,10 +9,9 @@ namespace SharedCookbookApi.Services
             return PasswordHasherExtension.Hash(password);
         }
 
-        public bool ValidatePassword(string password, string hashedPassword)
+        public bool VerifyPassword(string password, string hashedPassword)
         {
-            if (string.IsNullOrWhiteSpace(password) 
-                || string.IsNullOrWhiteSpace(hashedPassword))
+            if (string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(hashedPassword))
             {
                 return false;
             }
