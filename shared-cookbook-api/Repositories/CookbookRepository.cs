@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SharedCookbookApi.Data;
 using SharedCookbookApi.Data.Entities;
-using SharedCookbookApi.Enums;
 using System.Data;
 
 namespace SharedCookbookApi.Repositories;
@@ -23,9 +22,9 @@ public class CookbookRepository : ICookbookRepository
 
     public async Task<Cookbook?> GetCookbook(int id)
     {
-        return await _context.Cookbooks.FindAsync(id);
+        return await _context.Cookbooks.FindAsync(id);  
     }
-
+      
     public async Task<List<Cookbook>> GetCookbooks(int personId)
     {
         var cookbooks = await _context.Cookbooks
@@ -38,7 +37,7 @@ public class CookbookRepository : ICookbookRepository
     }
 
     public async Task<bool> UpdateCookbook(int id, Cookbook cookbook)
-    {
+    {   
         if (id != cookbook.CookbookId)
         {
             throw new ArgumentException("ID mismatch");

@@ -1,5 +1,8 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using shared_cookbook_api.Data.Dtos;
 using shared_cookbook_api.Data.Dtos.MappingProfiles;
+using shared_cookbook_api.Validators;
 using SharedCookbookApi.Data;
 using SharedCookbookApi.Extensions;
 using SharedCookbookApi.Repositories;
@@ -11,6 +14,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<ICookbookRepository, CookbookRepository>();
 builder.Services.AddScoped<IRecipeRepository, RecipeRepository>();
 builder.Services.AddScoped<IPersonRepository, PersonRepository>();
+
+builder.Services.AddScoped<IValidator<AuthenticationDto>, AuthenticationDtoValidator>();
 
 builder.Services.AddSingleton<ISeedDataService, SeedDataService>();
 builder.Services.AddSingleton<IAuthService, AuthService>();

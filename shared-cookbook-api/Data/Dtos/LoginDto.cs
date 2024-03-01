@@ -1,8 +1,3 @@
 ﻿namespace shared_cookbook_api.Data.Dtos;
 
-public class LoginDto
-{
-    public required string Email { get; set; }
-
-    public required string Password { get; set; }
-}
+public class LoginDto : AuthenticationDto { }

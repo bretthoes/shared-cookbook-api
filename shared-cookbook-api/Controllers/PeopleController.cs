@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using shared_cookbook_api.Data.Dtos;
@@ -15,12 +16,14 @@ public class PeopleController : ControllerBase
     private readonly IPersonRepository _personRepository;
     private readonly IAuthService _authService;
     private readonly IMapper _mapper;
+    private readonly IValidator<AuthenticationDto> _validator;
 
-    public PeopleController(IPersonRepository personRepository, IAuthService authService, IMapper mapper)
+    public PeopleController(IPersonRepository personRepository, IAuthService authService, IMapper mapper, IValidator<AuthenticationDto> validator)
     {
         _personRepository = personRepository;
         _authService = authService;
         _mapper = mapper;
+        _validator = validator;
     }
 
     [HttpGet("{id:int}", Name = nameof(GetPerson))]
@@ -101,9 +104,7 @@ public class PeopleController : ControllerBase
         var updatePersonDto = _mapper.Map<UpdatePersonDto>(existingPerson);
         patchDoc.ApplyTo(updatePersonDto);
 
-        TryValidateModel(updatePersonDto);
-
-        if (!ModelState.IsValid)
+        if (!TryValidateModel(updatePersonDto))
         {
             return BadRequest(ModelState);
         }
@@ -137,9 +138,10 @@ public class PeopleController : ControllerBase
     [HttpPost("login", Name = nameof(Login))]
     public ActionResult<PersonDto> Login([FromBody] LoginDto loginDto)
     {
-        if (loginDto == null || string.IsNullOrWhiteSpace(loginDto.Email) || string.IsNullOrWhiteSpace(loginDto.Password))
+        var validationResult = _validator.Validate(loginDto);
+        if (!validationResult.IsValid)
         {
-            return BadRequest();
+            return BadRequest(validationResult.Errors.Select(error => error.ErrorMessage));
         }
 
         var person = _personRepository.GetSingleByEmail(loginDto.Email);
@@ -148,11 +150,8 @@ public class PeopleController : ControllerBase
             return NotFound();
         }
 
-        if (person.PasswordHash == null || !_authService.VerifyPassword(loginDto.Password, person.PasswordHash))
-        {
-            return Unauthorized();
-        }
-
-        return Ok(_mapper.Map<PersonDto>(person));
+        return _authService.VerifyPassword(loginDto.Password, person.PasswordHash!)
+            ? Ok(_mapper.Map<PersonDto>(person))
+            : Unauthorized();
     }
 }
