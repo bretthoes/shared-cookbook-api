@@ -39,9 +39,16 @@ public class PeopleController : ControllerBase
     [HttpPost(Name = nameof(AddPerson))]
     public ActionResult<PersonDto> AddPerson(CreatePersonDto registerDto)
     {
-        if (registerDto == null || string.IsNullOrWhiteSpace(registerDto.Email) || string.IsNullOrWhiteSpace(registerDto.Password))
+        var validationResult = _validator.Validate(registerDto);
+        if (!validationResult.IsValid)
         {
-            return BadRequest();
+            return BadRequest(validationResult.Errors.Select(error => error.ErrorMessage));
+        }
+
+        var person = _personRepository.GetSingleByEmail(registerDto.Email);
+        if (person != null)
+        {
+            return Conflict();
         }
 
         var personToAdd = _mapper.Map<Person>(registerDto);
