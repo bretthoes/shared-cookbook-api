@@ -36,6 +36,16 @@ public class PeopleController : ControllerBase
             : Ok(_mapper.Map<PersonDto>(person));
     }
 
+    [HttpGet("by-email/{email}", Name = nameof(GetPersonByEmail))]
+    public ActionResult<PersonDto> GetPersonByEmail(string email)
+    {
+        var person = _personRepository.GetSingleByEmail(email);
+
+        return person is null
+            ? NotFound()
+            : Ok(_mapper.Map<PersonDto>(person));
+    }
+
     [HttpPost(Name = nameof(AddPerson))]
     public ActionResult<PersonDto> AddPerson(CreatePersonDto registerDto)
     {
@@ -73,14 +83,14 @@ public class PeopleController : ControllerBase
     [Route("{id:int}", Name = nameof(UpdatePerson))]
     public ActionResult<PersonDto> UpdatePerson(int id, [FromBody] UpdatePersonDto updatePersonDto)
     {
-        if (updatePersonDto == null)
+        if (updatePersonDto is null)
         {
             return BadRequest();
         }
 
         var existingPerson = _personRepository.GetSingle(id);
 
-        if (existingPerson == null)
+        if (existingPerson is null)
         {
             return NotFound();
         }
@@ -96,14 +106,14 @@ public class PeopleController : ControllerBase
     [HttpPatch("{id:int}", Name = nameof(PartiallyUpdatePerson))]
     public ActionResult<PersonDto> PartiallyUpdatePerson(int id, [FromBody] JsonPatchDocument<UpdatePersonDto> patchDoc)
     {
-        if (patchDoc == null)
+        if (patchDoc is null)
         {
             return BadRequest();
         }
 
         var existingPerson = _personRepository.GetSingle(id);
 
-        if (existingPerson == null)
+        if (existingPerson is null)
         {
             return NotFound();
         }
@@ -129,8 +139,7 @@ public class PeopleController : ControllerBase
     public ActionResult RemovePerson(int id)
     {
         var person = _personRepository.GetSingle(id);
-
-        if (person == null)
+        if (person is null)
         {
             return NotFound();
         }
@@ -152,7 +161,7 @@ public class PeopleController : ControllerBase
         }
 
         var person = _personRepository.GetSingleByEmail(loginDto.Email);
-        if (person == null)
+        if (person is null)
         {
             return NotFound();
         }
