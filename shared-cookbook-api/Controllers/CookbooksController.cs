@@ -8,18 +8,12 @@ namespace SharedCookbookApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class CookbooksController : ControllerBase
+public class CookbooksController(
+    ICookbookRepository cookbookRepository,
+    IMapper mapper) : ControllerBase
 {
-    private readonly ICookbookRepository _cookbookRepository;
-    private readonly IMapper _mapper;
-
-    public CookbooksController(
-        ICookbookRepository cookbookRepository,
-        IMapper mapper)
-    {
-        _cookbookRepository = cookbookRepository;
-        _mapper = mapper;
-    }
+    private readonly ICookbookRepository _cookbookRepository = cookbookRepository;
+    private readonly IMapper _mapper = mapper;
 
     [HttpGet("{id:int}", Name = nameof(GetCookbook))]
     public ActionResult<Cookbook> GetCookbook(int id)
@@ -31,7 +25,7 @@ public class CookbooksController : ControllerBase
             : Ok(cookbook);
     }
 
-    [HttpGet("person/{personId}", Name = nameof(GetCookbooks))]
+    [HttpGet("by-person/{personId}", Name = nameof(GetCookbooks))]
     public ActionResult<List<Cookbook>> GetCookbooks(int personId)
     {
         var cookbooks = _cookbookRepository.GetCookbooks(personId);
