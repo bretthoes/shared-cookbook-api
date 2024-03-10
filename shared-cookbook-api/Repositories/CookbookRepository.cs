@@ -1,82 +1,52 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SharedCookbookApi.Data;
+﻿using SharedCookbookApi.Data;
 using SharedCookbookApi.Data.Entities;
 using System.Data;
 
 namespace SharedCookbookApi.Repositories;
 
-public class CookbookRepository : ICookbookRepository
+public class CookbookRepository(SharedCookbookContext context) : ICookbookRepository
 {
-    private readonly SharedCookbookContext _context;
 
-    public CookbookRepository(SharedCookbookContext context)
+    private readonly SharedCookbookContext _context = context;
+
+    public Cookbook? GetSingle(int id)
     {
-        _context = context;
+        return _context.Cookbooks.Find(id);
     }
 
-    public async Task<bool> CreateCookbook(Cookbook cookbook)
+    public List<Cookbook> GetCookbooks(int personId)
     {
-        _context.Cookbooks.Add(cookbook);
-        return await _context.SaveChangesAsync() >= 0;
-    }
-
-    public async Task<Cookbook?> GetCookbook(int id)
-    {
-        return await _context.Cookbooks.FindAsync(id);  
-    }
-      
-    public async Task<List<Cookbook>> GetCookbooks(int personId)
-    {
-        var cookbooks = await _context.Cookbooks
+        var cookbooks = _context.Cookbooks
             .Where(c => _context.CookbookMembers
-            .Any(cm => cm.PersonId == personId
-                && cm.CookbookId == c.CookbookId))
-            .ToListAsync();
+                .Any(cm => cm.PersonId == personId
+                      && cm.CookbookId == c.CookbookId))
+            .ToList();
 
         return cookbooks ?? [];
     }
 
-    public async Task<bool> UpdateCookbook(int id, Cookbook cookbook)
-    {   
-        if (id != cookbook.CookbookId)
-        {
-            throw new ArgumentException("ID mismatch");
-        }
+    public void Add(Cookbook cookbook)
+    {
+        _context.Cookbooks.Add(cookbook);
+    }
 
-        _context.Entry(cookbook).State = EntityState.Modified;
-
-        try
+    public void Delete(int id)
+    {
+        var cookbook = GetSingle(id);
+        if (cookbook != null)
         {
-            await _context.SaveChangesAsync();
-            return true;
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!CookbookExists(id))
-            {
-                throw new KeyNotFoundException("Cookbook not found");
-            }
-            else
-            {
-                throw;
-            }
-        }
-        catch (Exception)
-        {
-            return false;
+            _context.Cookbooks.Remove(cookbook);
         }
     }
 
-    public async Task<bool> DeleteCookbook(int id)
+    public Cookbook Update(Cookbook cookbook)
     {
-        var cookbook = await _context.Cookbooks.FindAsync(id) 
-            ?? throw new KeyNotFoundException("Cookbook not found");
-        _context.Cookbooks.Remove(cookbook);
-        return await _context.SaveChangesAsync() > 0;
+        _context.Cookbooks.Update(cookbook);
+        return cookbook;
     }
 
-    private bool CookbookExists(int id)
+    public bool Save()
     {
-        return _context.Cookbooks.Any(e => e.CookbookId == id);
+        return _context.SaveChanges() >= 0;
     }
 }

@@ -4,9 +4,11 @@ namespace SharedCookbookApi.Repositories;
 
 public interface ICookbookRepository
 {
-    Task<bool> CreateCookbook(Cookbook cookbook);
-    Task<Cookbook?> GetCookbook(int id);
-    Task<List<Cookbook>> GetCookbooks(int personId);
-    Task<bool> UpdateCookbook(int id, Cookbook cookbook);
-    Task<bool> DeleteCookbook(int id);
+    Cookbook? GetSingle(int id);
+
+    List<Cookbook> GetCookbooks(int personId);
+    void Add(Cookbook cookbook);
+    void Delete(int id);
+    Cookbook Update(Cookbook cookbook);
+    bool Save();
 }

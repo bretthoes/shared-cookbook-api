@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
 using SharedCookbookApi.Data.Entities;
 using SharedCookbookApi.Repositories;
 
@@ -9,79 +11,127 @@ namespace SharedCookbookApi.Controllers;
 public class CookbooksController : ControllerBase
 {
     private readonly ICookbookRepository _cookbookRepository;
+    private readonly IMapper _mapper;
 
-    public CookbooksController(ICookbookRepository cookbookRepository)
+    public CookbooksController(
+        ICookbookRepository cookbookRepository,
+        IMapper mapper)
     {
         _cookbookRepository = cookbookRepository;
+        _mapper = mapper;
     }
 
-    [HttpPost]
-    public async Task<ActionResult<Cookbook>> CreateCookbook(Cookbook cookbook)
+    [HttpGet("{id:int}", Name = nameof(GetCookbook))]
+    public ActionResult<Cookbook> GetCookbook(int id)
     {
-        if (cookbook == null) 
-        {
-            return BadRequest();
-        }
-
-        bool created = await _cookbookRepository.CreateCookbook(cookbook);
-
-        return created 
-            ? CreatedAtAction(
-                nameof(GetCookbook), 
-                new { id = cookbook.CookbookId }, 
-                cookbook)
-            : BadRequest();
-    }
-
-    [HttpGet("{id:int}")]
-    public async Task<ActionResult<Cookbook>> GetCookbook(int id)
-    {
-        var cookbook = await _cookbookRepository.GetCookbook(id);
+        var cookbook = _cookbookRepository.GetSingle(id);
 
         return cookbook == null 
             ? NotFound() 
             : Ok(cookbook);
     }
 
-    [HttpGet("person/{personId}")]
-    public async Task<ActionResult<List<Cookbook>>> ListCookbooks(int personId)
+    [HttpGet("person/{personId}", Name = nameof(GetCookbooks))]
+    public ActionResult<List<Cookbook>> GetCookbooks(int personId)
     {
-        var cookbooks = await _cookbookRepository.GetCookbooks(personId);
+        var cookbooks = _cookbookRepository.GetCookbooks(personId);
 
         return cookbooks.Count == 0
             ? NotFound()
             : Ok(cookbooks);
     }
 
-    [HttpPut("{id:int}")]
-    public async Task<IActionResult> UpdateCookbook(int id, Cookbook cookbook)
+    [HttpPost(Name = nameof(AddCookbook))]
+    public ActionResult<Cookbook> AddCookbook(Cookbook cookbook)
     {
-        if (id != cookbook.CookbookId)
+        if (cookbook == null)
         {
             return BadRequest();
         }
 
-        bool updated = await _cookbookRepository.UpdateCookbook(id, cookbook);
+        _cookbookRepository.Add(cookbook);
 
-        return updated 
-            ? NoContent() 
-            : NotFound();
+        if (!_cookbookRepository.Save())
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+
+        var newCookbook = _cookbookRepository.GetSingle(cookbook.CookbookId);
+
+        return newCookbook is null
+            ? NotFound()
+            : CreatedAtAction(
+                nameof(GetCookbook),
+                new { id = newCookbook.CookbookId },
+                newCookbook);
     }
 
-    [HttpDelete("{id:int}")]
-    public async Task<IActionResult> DeleteCookbook(int id)
+    [HttpPut("{id:int}", Name = nameof(UpdateCookbook))]
+    public ActionResult UpdateCookbook(
+        int id,
+        [FromBody] Cookbook cookbook)
     {
-        var cookbook = await GetCookbook(id);
+        if (cookbook is null)
+        {
+            return BadRequest();
+        }
 
-        if (cookbook == null)
+        var existingCookbook = _cookbookRepository.GetSingle(id);
+
+        if (existingCookbook is null)
         {
             return NotFound();
         }
 
-        bool deleted = await _cookbookRepository.DeleteCookbook(id);
+        return _cookbookRepository.Save()
+            ? NoContent()
+            : StatusCode(StatusCodes.Status500InternalServerError);
+    }
 
-        return deleted 
-            ? NoContent() 
-            : NotFound();
+    [HttpPatch("{id:int}", Name = nameof(PartiallyUpdateCookbook))]
+    public ActionResult<Cookbook> PartiallyUpdateCookbook(
+        int id,
+        [FromBody] JsonPatchDocument<Cookbook> patchDoc)
+    {
+        if (patchDoc is null)
+        {
+            return BadRequest();
+        }
+
+        var existingCookbook = _cookbookRepository.GetSingle(id);
+
+        if (existingCookbook is null)
+        {
+            return NotFound();
+        }
+
+        patchDoc.ApplyTo(existingCookbook);
+
+        if (!TryValidateModel(existingCookbook))
+        {
+            return BadRequest(ModelState);
+        }
+
+        _cookbookRepository.Update(existingCookbook);
+
+        return _cookbookRepository.Save()
+            ? NoContent()
+            : StatusCode(StatusCodes.Status500InternalServerError);
+    }
+
+    [HttpDelete("{id:int}", Name = nameof(RemoveCookbook))]
+    public ActionResult RemoveCookbook(int id)
+    {
+        var cookbook = _cookbookRepository.GetSingle(id);
+        if (cookbook is null)
+        {
+            return NotFound();
+        }
+
+        _cookbookRepository.Delete(id);
+
+        return _cookbookRepository.Save()
+            ? NoContent()
+            : StatusCode(StatusCodes.Status500InternalServerError);
     }
 }
