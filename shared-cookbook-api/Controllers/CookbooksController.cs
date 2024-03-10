@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using shared_cookbook_api.Repositories.Interfaces;
 using SharedCookbookApi.Data.Entities;
-using SharedCookbookApi.Repositories;
 
 namespace SharedCookbookApi.Controllers;
 

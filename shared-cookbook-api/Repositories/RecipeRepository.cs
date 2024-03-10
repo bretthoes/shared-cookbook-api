@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using shared_cookbook_api.Repositories.Interfaces;
 using SharedCookbookApi.Data;
 using SharedCookbookApi.Data.Entities;
 

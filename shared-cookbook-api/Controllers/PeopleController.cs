@@ -3,8 +3,8 @@ using FluentValidation;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using shared_cookbook_api.Data.Dtos;
+using shared_cookbook_api.Repositories.Interfaces;
 using SharedCookbookApi.Data.Entities;
-using SharedCookbookApi.Repositories;
 using SharedCookbookApi.Services;
 
 namespace SharedCookbookApi.Controllers;

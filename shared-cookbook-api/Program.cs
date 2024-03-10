@@ -2,6 +2,7 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using shared_cookbook_api.Data.Dtos;
 using shared_cookbook_api.Data.Dtos.MappingProfiles;
+using shared_cookbook_api.Repositories.Interfaces;
 using shared_cookbook_api.Validators;
 using SharedCookbookApi.Data;
 using SharedCookbookApi.Extensions;
