@@ -4,9 +4,10 @@ namespace SharedCookbookApi.Repositories;
 
 public interface IRecipeRepository
 {
-    Task<List<Recipe>> GetRecipesInCookbook(int cookbookId);
-    Task<Recipe?> GetRecipe(int id);
-    Task<bool> UpdateRecipe(int id, Recipe Recipe);
-    Task<Recipe> CreateRecipe(Recipe Recipe);
-    Task DeleteRecipe(int id);
+    Recipe? GetSingle(int id);
+    List<Recipe> GetRecipes(int cookbookId);
+    void Add(Recipe recipe);
+    void Delete(int id);
+    Recipe Update(Recipe recipe);
+    bool Save();
 }

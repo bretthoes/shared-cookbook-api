@@ -4,82 +4,47 @@ using SharedCookbookApi.Data.Entities;
 
 namespace SharedCookbookApi.Repositories;
 
-public class RecipeRepository : IRecipeRepository
+public class RecipeRepository(SharedCookbookContext context) : IRecipeRepository
 {
-    private readonly SharedCookbookContext _context;
+    private readonly SharedCookbookContext _context = context;
 
-    public RecipeRepository(SharedCookbookContext context)
+    public Recipe? GetSingle(int id)
     {
-        _context = context;
+        return _context.Recipes.Find(id);
     }
 
-    public async Task<Recipe> CreateRecipe(Recipe Recipe)
+    public List<Recipe> GetRecipes(int cookbookId)
     {
-        _context.Recipes.Add(Recipe);
-        await _context.SaveChangesAsync();
-        return Recipe;
-    }
-
-    public async Task<List<Recipe>> GetRecipesInCookbook(int cookbookId)
-    {
-        var recipes = await _context.Recipes
+        var recipes = _context.Recipes
             .Where(r => r.CookbookId == cookbookId)
             .OrderBy(r => r.Title)
-            .ToListAsync();
+            .ToList();
 
         return recipes ?? [];
     }
 
-    public async Task<Recipe?> GetRecipe(int id)
+    public void Add(Recipe recipe)
     {
-        return await _context.Recipes.FindAsync(id);
+        _context.Recipes.Add(recipe);
     }
 
-    public async Task<bool> UpdateRecipe(int id, Recipe Recipe)
+    public void Delete(int id)
     {
-        if (id != Recipe.RecipeId)
+        var recipe = GetSingle(id);
+        if (recipe != null)
         {
-            return false;
-        }
-
-        _context.Entry(Recipe).State = EntityState.Modified;
-
-        try
-        {
-            await _context.SaveChangesAsync();
-            return true;
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!RecipeExists(id))
-            {
-                throw new KeyNotFoundException("Recipe not found");
-            }
-            else
-            {
-                throw;
-            }
-        }
-        catch (Exception)
-        {
-            return false;
+            _context.Recipes.Remove(recipe);
         }
     }
 
-    public async Task DeleteRecipe(int id)
+    public Recipe Update(Recipe recipe)
     {
-        var Recipe = await _context.Recipes.FindAsync(id);
-        if (Recipe == null)
-        {
-            throw new KeyNotFoundException("Recipe not found");
-        }
-
-        _context.Recipes.Remove(Recipe);
-        await _context.SaveChangesAsync();
+        _context.Recipes.Update(recipe);
+        return recipe;
     }
 
-    private bool RecipeExists(int id)
+    public bool Save()
     {
-        return _context.Recipes.Any(e => e.RecipeId == id);
+        return _context.SaveChanges() >= 0;
     }
 }

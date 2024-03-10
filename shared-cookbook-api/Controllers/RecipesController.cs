@@ -1,81 +1,129 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
 using SharedCookbookApi.Data.Entities;
 using SharedCookbookApi.Repositories;
 
 namespace SharedCookbookApi.Controllers;
 
-public class RecipesController : Controller
+public class RecipesController(
+    IRecipeRepository recipeRepository,
+    IMapper mapper) : ControllerBase
 {
-    private readonly IRecipeRepository _recipeRepository;
+    private readonly IRecipeRepository _recipeRepository = recipeRepository;
+    private readonly IMapper _mapper = mapper;
 
-    public RecipesController(IRecipeRepository recipeRepository)
+    [HttpGet("{id:int}", Name = nameof(GetRecipe))]
+    public ActionResult<Cookbook> GetRecipe(int id)
     {
-        _recipeRepository = recipeRepository;
+        var recipe = _recipeRepository.GetSingle(id);
+
+        return recipe == null
+            ? NotFound()
+            : Ok(recipe);
     }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<Recipe>> GetRecipe(int id)
+    [HttpGet("by-cookbook/{cookbookId}", Name = nameof(GetRecipes))]
+    public ActionResult<List<Cookbook>> GetRecipes(int cookbookId)
     {
-        var recipe = await _recipeRepository.GetRecipe(id);
+        var recipes = _recipeRepository.GetRecipes(cookbookId);
 
+        return recipes.Count == 0
+            ? NotFound()
+            : Ok(recipes);
+    }
+
+    [HttpPost(Name = nameof(AddRecipe))]
+    public ActionResult<Recipe> AddRecipe(Recipe recipe)
+    {
         if (recipe == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(recipe);
-    }
-
-    [HttpGet("person/{personId}/recipes")]
-    public async Task<ActionResult<List<Recipe>>> GetRecipesInCookbook(int cookbookId)
-    {
-        var recipes = await _recipeRepository.GetRecipesInCookbook(cookbookId);
-
-        if (recipes == null || !recipes.Any())
-        {
-            return NotFound();
-        }
-
-        return Ok(recipes);
-    }
-
-    [HttpPut("{id}")]
-    public async Task<IActionResult> PutRecipe(int id, Recipe recipe)
-    {
-        if (id != recipe.RecipeId)
         {
             return BadRequest();
         }
 
-        bool updated = await _recipeRepository.UpdateRecipe(id, recipe);
+        _recipeRepository.Add(recipe);
 
-        if (!updated)
+        if (!_recipeRepository.Save())
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+
+        var newRecipe = _recipeRepository.GetSingle(recipe.RecipeId);
+
+        return newRecipe is null
+            ? NotFound()
+            : CreatedAtAction(
+                nameof(GetRecipe),
+                new { id = newRecipe.RecipeId },
+                newRecipe);
+    }
+
+    [HttpPut("{id:int}", Name = nameof(UpdateRecipe))]
+    public ActionResult UpdateRecipe(
+        int id,
+        [FromBody] Recipe recipe)
+    {
+        if (recipe is null)
+        {
+            return BadRequest();
+        }
+
+        var existingRecipe = _recipeRepository.GetSingle(id);
+
+        if (existingRecipe is null)
         {
             return NotFound();
         }
 
-        return NoContent();
+        return _recipeRepository.Save()
+            ? NoContent()
+            : StatusCode(StatusCodes.Status500InternalServerError);
     }
 
-
-    [HttpPost]
-    public async Task<ActionResult<Recipe>> PostRecipe(Recipe recipe)
+    [HttpPatch("{id:int}", Name = nameof(PartiallyUpdateRecipe))]
+    public ActionResult<Recipe> PartiallyUpdateRecipe(
+        int id,
+        [FromBody] JsonPatchDocument<Recipe> patchDoc)
     {
-        await _recipeRepository.CreateRecipe(recipe);
-        return CreatedAtAction("GetRecipe", new { id = recipe.RecipeId }, recipe);
-    }
+        if (patchDoc is null)
+        {
+            return BadRequest();
+        }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteRecipe(int id)
-    {
-        var recipe = await GetRecipe(id);
+        var existingRecipe = _recipeRepository.GetSingle(id);
 
-        if (recipe == null)
+        if (existingRecipe is null)
         {
             return NotFound();
         }
 
-        await _recipeRepository.DeleteRecipe(id);
-        return NoContent();
+        patchDoc.ApplyTo(existingRecipe);
+
+        if (!TryValidateModel(existingRecipe))
+        {
+            return BadRequest(ModelState);
+        }
+
+        _recipeRepository.Update(existingRecipe);
+
+        return _recipeRepository.Save()
+            ? NoContent()
+            : StatusCode(StatusCodes.Status500InternalServerError);
+    }
+
+    [HttpDelete("{id:int}", Name = nameof(RemoveRecipe))]
+    public ActionResult RemoveRecipe(int id)
+    {
+        var recipe = _recipeRepository.GetSingle(id);
+        if (recipe is null)
+        {
+            return NotFound();
+        }
+
+        _recipeRepository.Delete(id);
+
+        return _recipeRepository.Save()
+            ? NoContent()
+            : StatusCode(StatusCodes.Status500InternalServerError);
     }
 }
