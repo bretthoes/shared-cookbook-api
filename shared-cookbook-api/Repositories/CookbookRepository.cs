@@ -6,7 +6,6 @@ namespace SharedCookbookApi.Repositories;
 
 public class CookbookRepository(SharedCookbookContext context) : ICookbookRepository
 {
-
     private readonly SharedCookbookContext _context = context;
 
     public Cookbook? GetSingle(int id)

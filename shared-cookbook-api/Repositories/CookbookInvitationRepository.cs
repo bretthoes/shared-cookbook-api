@@ -1,28 +1,51 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SharedCookbookApi.Data;
+﻿using SharedCookbookApi.Data;
 using SharedCookbookApi.Data.Entities;
 using SharedCookbookApi.Enums;
 
-namespace SharedCookbookApi.Repositories
+namespace SharedCookbookApi.Repositories;
+
+public class CookbookInvitationRepository(SharedCookbookContext context) : ICookbookInvitationRepository
 {
-    public class CookbookInvitationRepository : ICookbookInvitationRepository
+    private readonly SharedCookbookContext _context = context;
+
+    public CookbookInvitation? GetSingle(int id)
     {
-        private readonly SharedCookbookContext _context;
+        return _context.CookbookInvitations.Find(id);
+    }
 
-        public CookbookInvitationRepository(SharedCookbookContext context)
+    public List<CookbookInvitation> GetInvitations(int personId)
+    {
+        var invitations = _context.CookbookInvitations
+            .Where(ci => ci.RecipientPersonId == personId
+                && ci.InvitationStatus == CookbookInvitationStatus.Sent)
+            .OrderByDescending(ci => ci.SentDate)
+            .ToList();
+
+        return invitations ?? [];
+    }
+
+    public void Add(CookbookInvitation invitation)
+    {
+        _context.CookbookInvitations.Add(invitation);
+    }
+
+    public void Delete(int id)
+    {
+        var invitation = GetSingle(id);
+        if (invitation != null)
         {
-            _context = context;
+            _context.CookbookInvitations.Remove(invitation);
         }
+    }
 
-        public async Task<List<CookbookInvitation>> GetInvitationsForPerson(int personId)
-        {
-            var invitations = await _context.CookbookInvitations
-                .Where(ci => ci.RecipientPersonId == personId
-                    && ci.InvitationStatus == CookbookInvitationStatus.Sent)
-                .OrderByDescending(ci => ci.SentDate)
-                .ToListAsync();
+    public CookbookInvitation Update(CookbookInvitation invitation)
+    {
+        _context.CookbookInvitations.Update(invitation);
+        return invitation;
+    }
 
-            return invitations ?? [];
-        }
+    public bool Save()
+    {
+        return _context.SaveChanges() >= 0;
     }
 }

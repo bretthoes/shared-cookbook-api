@@ -4,6 +4,11 @@ namespace SharedCookbookApi.Repositories
 {
     public interface ICookbookInvitationRepository
     {
-        Task<List<CookbookInvitation>> GetInvitationsForPerson(int personId);
+        CookbookInvitation? GetSingle(int id);
+        List<CookbookInvitation> GetInvitations(int personId);
+        void Add(CookbookInvitation invitation);
+        void Delete(int id);
+        CookbookInvitation Update(CookbookInvitation invitation);
+        bool Save();
     }
 }
