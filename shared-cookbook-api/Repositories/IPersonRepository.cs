@@ -1,6 +1,4 @@
-﻿using shared_cookbook_api.Data.Dtos;
-using SharedCookbookApi.Controllers;
-using SharedCookbookApi.Data.Entities;
+﻿using SharedCookbookApi.Data.Entities;
 
 namespace SharedCookbookApi.Repositories;
 

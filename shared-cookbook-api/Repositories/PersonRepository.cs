@@ -3,15 +3,10 @@ using SharedCookbookApi.Data.Entities;
 
 namespace SharedCookbookApi.Repositories;
 
-public class PersonRepository : IPersonRepository
+public class PersonRepository(SharedCookbookContext context) : IPersonRepository
 {
 
-    private readonly SharedCookbookContext _context;
-
-    public PersonRepository(SharedCookbookContext context)
-    {
-        _context = context;
-    }
+    private readonly SharedCookbookContext _context = context;
 
     public Person? GetSingle(int id)
     {

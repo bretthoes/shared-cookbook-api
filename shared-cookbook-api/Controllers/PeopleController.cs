@@ -18,7 +18,11 @@ public class PeopleController : ControllerBase
     private readonly IMapper _mapper;
     private readonly IValidator<AuthenticationDto> _validator;
 
-    public PeopleController(IPersonRepository personRepository, IAuthService authService, IMapper mapper, IValidator<AuthenticationDto> validator)
+    public PeopleController(
+        IPersonRepository personRepository,
+        IAuthService authService,
+        IMapper mapper,
+        IValidator<AuthenticationDto> validator)
     {
         _personRepository = personRepository;
         _authService = authService;
@@ -69,19 +73,24 @@ public class PeopleController : ControllerBase
 
         if (!_personRepository.Save())
         {
-            return StatusCode(500);
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
 
-        var newPersonDto = _mapper.Map<PersonDto>(_personRepository.GetSingle(personToAdd.PersonId));
+        var newPersonDto = _mapper
+            .Map<PersonDto>(_personRepository.GetSingle(personToAdd.PersonId));
 
         return newPersonDto is null
-            ? BadRequest()
-            : CreatedAtAction(nameof(GetPerson), new { id = newPersonDto.PersonId }, newPersonDto);
+            ? NotFound()
+            : CreatedAtAction(
+                nameof(GetPerson), 
+                new { id = newPersonDto.PersonId }, 
+                newPersonDto);
     }
 
-    [HttpPut]
-    [Route("{id:int}", Name = nameof(UpdatePerson))]
-    public ActionResult<PersonDto> UpdatePerson(int id, [FromBody] UpdatePersonDto updatePersonDto)
+    [HttpPut("{id:int}", Name = nameof(UpdatePerson))]
+    public ActionResult<PersonDto> UpdatePerson(
+        int id,
+        [FromBody] UpdatePersonDto updatePersonDto)
     {
         if (updatePersonDto is null)
         {
@@ -100,11 +109,13 @@ public class PeopleController : ControllerBase
 
         return _personRepository.Save()
             ? NoContent()
-            : StatusCode(500);
+            : StatusCode(StatusCodes.Status500InternalServerError);
     }
 
     [HttpPatch("{id:int}", Name = nameof(PartiallyUpdatePerson))]
-    public ActionResult<PersonDto> PartiallyUpdatePerson(int id, [FromBody] JsonPatchDocument<UpdatePersonDto> patchDoc)
+    public ActionResult<PersonDto> PartiallyUpdatePerson(
+        int id,
+        [FromBody] JsonPatchDocument<UpdatePersonDto> patchDoc)
     {
         if (patchDoc is null)
         {
@@ -131,11 +142,10 @@ public class PeopleController : ControllerBase
 
         return _personRepository.Save()
             ? NoContent()
-            : StatusCode(500);
+            : StatusCode(StatusCodes.Status500InternalServerError);
     }
 
-    [HttpDelete]
-    [Route("{id:int}", Name = nameof(RemovePerson))]
+    [HttpDelete("{id:int}", Name = nameof(RemovePerson))]
     public ActionResult RemovePerson(int id)
     {
         var person = _personRepository.GetSingle(id);
@@ -148,7 +158,7 @@ public class PeopleController : ControllerBase
 
         return _personRepository.Save()
             ? NoContent()
-            : StatusCode(500);
+            : StatusCode(StatusCodes.Status500InternalServerError);
     }
 
     [HttpPost("login", Name = nameof(Login))]
