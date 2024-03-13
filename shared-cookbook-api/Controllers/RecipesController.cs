@@ -28,9 +28,7 @@ public class RecipesController(
     {
         var recipes = _recipeRepository.GetRecipes(cookbookId);
 
-        return recipes.Count == 0
-            ? NotFound()
-            : Ok(recipes);
+        return Ok(recipes);
     }
 
     [HttpPost(Name = nameof(AddRecipe))]

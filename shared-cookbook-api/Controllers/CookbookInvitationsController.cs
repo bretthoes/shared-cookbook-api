@@ -30,9 +30,7 @@ public class CookbookInvitationsController(
     {
         var invitations = _invitationRepository.GetInvitations(personId);
 
-        return invitations.Count == 0
-            ? NotFound()
-            : Ok(invitations);
+        return Ok(invitations);
     }
 
     [HttpPost(Name = nameof(AddInvitation))]

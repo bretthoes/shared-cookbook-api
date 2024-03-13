@@ -30,9 +30,7 @@ public class CookbooksController(
     {
         var cookbooks = _cookbookRepository.GetCookbooks(personId);
 
-        return cookbooks.Count == 0
-            ? NotFound()
-            : Ok(cookbooks);
+        return Ok(cookbooks);
     }
 
     [HttpPost(Name = nameof(AddCookbook))]
