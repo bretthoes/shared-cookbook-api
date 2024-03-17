@@ -83,7 +83,7 @@ public class RecipesController(
         int id,
         [FromBody] JsonPatchDocument<Recipe> patchDoc)
     {
-        if (patchDoc is null)
+        if (patchDoc is null || patchDoc.Operations.Count == 0)
         {
             return BadRequest();
         }

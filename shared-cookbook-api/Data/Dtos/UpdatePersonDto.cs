@@ -2,9 +2,9 @@
 
 public class UpdatePersonDto
 {
-    public required int PersonId { get; set; }
+    public int? PersonId { get; set; }
 
-    public required string Email { get; set; }
+    public string? Email { get; set; }
 
     public string? DisplayName { get; set; }
 

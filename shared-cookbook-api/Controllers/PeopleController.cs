@@ -117,7 +117,7 @@ public class PeopleController : ControllerBase
         int id,
         [FromBody] JsonPatchDocument<UpdatePersonDto> patchDoc)
     {
-        if (patchDoc is null)
+        if (patchDoc is null || patchDoc.Operations.Count == 0)
         {
             return BadRequest();
         }
