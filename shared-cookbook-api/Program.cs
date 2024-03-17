@@ -8,8 +8,14 @@ using SharedCookbookApi.Data;
 using SharedCookbookApi.Extensions;
 using SharedCookbookApi.Repositories;
 using SharedCookbookApi.Services;
+using Newtonsoft.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services
+    .AddControllers()
+    .AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver());
+
 
 // Add services to the container.
 builder.Services.AddScoped<ICookbookRepository, CookbookRepository>();
@@ -21,7 +27,6 @@ builder.Services.AddScoped<IValidator<AuthenticationDto>, AuthenticationDtoValid
 builder.Services.AddSingleton<ISeedDataService, SeedDataService>();
 builder.Services.AddSingleton<IAuthService, AuthService>();
 
-builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

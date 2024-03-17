@@ -97,7 +97,14 @@ public class CookbooksController(
             return NotFound();
         }
 
-        patchDoc.ApplyTo(existingCookbook);
+        try
+        {
+            patchDoc.ApplyTo(existingCookbook);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Invalid patch document: {ex.Message}");
+        }
 
         if (!TryValidateModel(existingCookbook))
         {

@@ -97,7 +97,14 @@ public class CookbookInvitationsController(
             return NotFound();
         }
 
-        patchDoc.ApplyTo(existingInvitation);
+        try
+        {
+            patchDoc.ApplyTo(existingInvitation);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Invalid patch document: {ex.Message}");
+        }
 
         if (!TryValidateModel(existingInvitation))
         {

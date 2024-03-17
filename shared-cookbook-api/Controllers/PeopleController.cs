@@ -130,7 +130,15 @@ public class PeopleController : ControllerBase
         }
 
         var updatePersonDto = _mapper.Map<UpdatePersonDto>(existingPerson);
-        patchDoc.ApplyTo(updatePersonDto);
+
+        try
+        {
+            patchDoc.ApplyTo(updatePersonDto);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Invalid patch document: {ex.Message}");
+        }
 
         if (!TryValidateModel(updatePersonDto))
         {

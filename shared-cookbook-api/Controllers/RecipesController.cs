@@ -95,7 +95,14 @@ public class RecipesController(
             return NotFound();
         }
 
-        patchDoc.ApplyTo(existingRecipe);
+        try
+        {
+            patchDoc.ApplyTo(existingRecipe);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Invalid patch document: {ex.Message}");
+        }
 
         if (!TryValidateModel(existingRecipe))
         {
