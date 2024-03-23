@@ -109,10 +109,10 @@ public class RecipesController(
             return BadRequest(ModelState);
         }
 
-        _recipeRepository.Update(existingRecipe);
+        var recipe = _recipeRepository.Update(existingRecipe);
 
         return _recipeRepository.Save()
-            ? NoContent()
+            ? Ok(recipe)
             : StatusCode(StatusCodes.Status500InternalServerError);
     }
 

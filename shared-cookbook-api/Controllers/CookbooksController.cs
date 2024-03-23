@@ -111,10 +111,10 @@ public class CookbooksController(
             return BadRequest(ModelState);
         }
 
-        _cookbookRepository.Update(existingCookbook);
+        var cookbook = _cookbookRepository.Update(existingCookbook);
 
         return _cookbookRepository.Save()
-            ? NoContent()
+            ? Ok(cookbook)
             : StatusCode(StatusCodes.Status500InternalServerError);
     }
 

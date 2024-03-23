@@ -111,10 +111,10 @@ public class CookbookInvitationsController(
             return BadRequest(ModelState);
         }
 
-        _invitationRepository.Update(existingInvitation);
+        var invitation = _invitationRepository.Update(existingInvitation);
 
         return _invitationRepository.Save()
-            ? NoContent()
+            ? Ok(invitation)
             : StatusCode(StatusCodes.Status500InternalServerError);
     }
 
