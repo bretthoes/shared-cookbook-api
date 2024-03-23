@@ -5,12 +5,14 @@ using shared_cookbook_api.Data.Dtos.MappingProfiles;
 using shared_cookbook_api.Repositories.Interfaces;
 using shared_cookbook_api.Validators;
 using SharedCookbookApi.Data;
-using SharedCookbookApi.Extensions;
 using SharedCookbookApi.Repositories;
 using SharedCookbookApi.Services;
 using Newtonsoft.Json.Serialization;
+using SharedCookbookApi.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration.AddUserSecrets<Program>();
 
 builder.Services
     .AddControllers()
@@ -47,8 +49,8 @@ if (app.Environment.IsDevelopment())
     {
         var dbContext = scope.ServiceProvider.GetRequiredService<SharedCookbookContext>();
 
-        //dbContext.Database.EnsureDeleted();
-        //dbContext.Database.EnsureCreated();
+        dbContext.Database.EnsureDeleted();
+        dbContext.Database.EnsureCreated();
 
     }
     app.UseSwagger();
