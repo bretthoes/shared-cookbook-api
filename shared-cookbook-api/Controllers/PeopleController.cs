@@ -146,10 +146,19 @@ public class PeopleController : ControllerBase
         }
 
         _mapper.Map(updatePersonDto, existingPerson);
+
         var person = _personRepository.Update(existingPerson);
 
+        if (person is null)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError); 
+        }
+
+        var personDto = _mapper.Map<PersonDto>(person);
+
+
         return _personRepository.Save()
-            ? Ok(person)
+            ? Ok(personDto)
             : StatusCode(StatusCodes.Status500InternalServerError);
     }
 
