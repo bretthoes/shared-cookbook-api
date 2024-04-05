@@ -26,18 +26,14 @@ public class SeedDataService : ISeedDataService
                 DisplayName = "Brett",
                 Email = "bretthoes@gmail.com",
                 ImagePath = null,
-                PasswordHash = "9389F2261E8E167A17C8F22224FAA22F5DB5F717447E550CE0480EE1286B392A:4B3E39CC74BABB68BEF214C931406235:50000:SHA256",
-                PasswordSalt = "password_salt",
-                FirebaseUserUid = "firebase_user_uid",
+                PasswordHash = "9389F2261E8E167A17C8F22224FAA22F5DB5F717447E550CE0480EE1286B392A:4B3E39CC74BABB68BEF214C931406235:50000:SHA256"
             },
             new() {
                 PersonId = 0,
                 DisplayName = "Test",
                 Email = "test@test.com",
                 ImagePath = null,
-                PasswordHash = "9389F2261E8E167A17C8F22224FAA22F5DB5F717447E550CE0480EE1286B392A:4B3E39CC74BABB68BEF214C931406235:50000:SHA256",
-                PasswordSalt = "password_salt",
-                FirebaseUserUid = "firebase_user_uid",
+                PasswordHash = "9389F2261E8E167A17C8F22224FAA22F5DB5F717447E550CE0480EE1286B392A:4B3E39CC74BABB68BEF214C931406235:50000:SHA256"
             }
         };
 
@@ -81,9 +77,7 @@ public class SeedDataService : ISeedDataService
                 DisplayName = "Test2",
                 Email = "test2@test.com",
                 ImagePath = null,
-                PasswordHash = "9389F2261E8E167A17C8F22224FAA22F5DB5F717447E550CE0480EE1286B392A:4B3E39CC74BABB68BEF214C931406235:50000:SHA256",
-                PasswordSalt = "password_salt",
-                FirebaseUserUid = "firebase_user_uid",
+                PasswordHash = "9389F2261E8E167A17C8F22224FAA22F5DB5F717447E550CE0480EE1286B392A:4B3E39CC74BABB68BEF214C931406235:50000:SHA256"
             },
             }
         };

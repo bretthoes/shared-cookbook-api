@@ -8,14 +8,6 @@ public class Cookbook
 
     public required string Title { get; set; }
 
-    public string? CoverPattern { get; set; }
-
-    public string? CoverFont { get; set; }
-
-    public string? CoverColor { get; set; }
-
-    public string? CoverAccentColor { get; set; }
-
     public string? ImagePath { get; set; }
 
     public virtual Person? Creator { get; set; }

@@ -10,11 +10,7 @@ public class Person
 
     public string? ImagePath { get; set; }
 
-    public string? PasswordHash { get; set; }
-
-    public string? PasswordSalt { get; set; }
-
-    public string? FirebaseUserUid { get; set; }
+    public required string PasswordHash { get; set; }
 
     public virtual ICollection<Cookbook> Cookbooks { get; set; } = [];
 

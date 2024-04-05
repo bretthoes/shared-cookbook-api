@@ -9,7 +9,7 @@ public class AuthService : IAuthService
         return PasswordHasherExtension.Hash(password);
     }
 
-    public bool VerifyPassword(string password, string hashedPassword)
+    public bool VerifyPassword(string? password, string? hashedPassword)
     {
         if (string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(hashedPassword))
         {

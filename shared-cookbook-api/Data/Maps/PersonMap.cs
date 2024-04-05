@@ -31,13 +31,8 @@ public class PersonMap : IEntityTypeConfiguration<Person>
             .HasColumnName("image_path");
         builder.Property(p => p.PasswordHash)
             .HasMaxLength(255)
-            .HasColumnName("password_hash");
-        builder.Property(p => p.PasswordSalt)
-            .HasMaxLength(255)
-            .HasColumnName("password_salt");
-        builder.Property(p => p.FirebaseUserUid)
-            .HasMaxLength(255)
-            .HasColumnName("firebase_user_uid");
+            .HasColumnName("password_hash")
+            .IsRequired();
 
         builder.HasMany(p => p.Cookbooks)
             .WithOne(c => c.Creator)

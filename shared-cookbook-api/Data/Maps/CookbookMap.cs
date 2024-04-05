@@ -26,18 +26,6 @@ public class CookbookMap : IEntityTypeConfiguration<Cookbook>
             .HasColumnName("title")
             .HasMaxLength(255)
             .IsRequired();
-        builder.Property(c => c.CoverPattern)
-            .HasColumnName("cover_pattern")
-            .HasMaxLength(255);
-        builder.Property(c => c.CoverFont)
-            .HasColumnName("cover_font")
-            .HasMaxLength(255);
-        builder.Property(c => c.CoverColor)
-            .HasColumnName("cover_color")
-            .HasMaxLength(255);
-        builder.Property(c => c.CoverAccentColor)
-            .HasColumnName("cover_accent_color")
-            .HasMaxLength(255);
         builder.Property(c => c.ImagePath)
             .HasColumnName("image_path")
             .HasMaxLength(255);

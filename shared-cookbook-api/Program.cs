@@ -32,6 +32,8 @@ builder.Services.AddSingleton<IAuthService, AuthService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddCustomCors("AllowAllOrigins");
+
 // Add Db context
 builder.Services.AddDbContext<SharedCookbookContext>(options =>
 {
@@ -59,7 +61,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowAllOrigins");
-//app.UseHttpsRedirection(); //TODO uncomment this. only commented out for testing
+// TODO uncomment this. only commented out for localhost usage
+//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 

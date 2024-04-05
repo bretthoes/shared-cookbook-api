@@ -193,7 +193,7 @@ public class PeopleController : ControllerBase
             return NotFound();
         }
 
-        return _authService.VerifyPassword(loginDto.Password, person.PasswordHash!)
+        return _authService.VerifyPassword(loginDto.Password, person.PasswordHash)
             ? Ok(_mapper.Map<PersonDto>(person))
             : Unauthorized();
     }
