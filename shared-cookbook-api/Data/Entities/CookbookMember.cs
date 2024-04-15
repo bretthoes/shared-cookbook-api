@@ -24,5 +24,5 @@ public class CookbookMember
 
     public required virtual Cookbook Cookbook { get; set; }
 
-    public required virtual Person Person { get; set; }
+    public virtual Person? Person { get; set; }
 }

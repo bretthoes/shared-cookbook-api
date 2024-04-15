@@ -24,10 +24,14 @@ public class CookbookRepository(SharedCookbookContext context) : ICookbookReposi
 
         return cookbooks ?? [];
     }
-
-    public void Add(Cookbook cookbook)
+    
+    public void Add(Cookbook cookbook, CookbookMember creator)
     {
         _context.Cookbooks.Add(cookbook);
+
+        // Add a corresponding CookbookMember record
+        // to represent the creator's membership.
+        _context.CookbookMembers.Add(creator);
     }
 
     public void Delete(int id)

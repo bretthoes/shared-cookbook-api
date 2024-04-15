@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using shared_cookbook_api.Data.Dtos;
 using shared_cookbook_api.Repositories.Interfaces;
 using SharedCookbookApi.Data.Entities;
 
@@ -34,28 +35,31 @@ public class CookbooksController(
     }
 
     [HttpPost(Name = nameof(AddCookbook))]
-    public ActionResult<Cookbook> AddCookbook(Cookbook cookbook)
+    public ActionResult<CookbookDto> AddCookbook(Cookbook cookbook)
     {
         if (cookbook == null)
         {
             return BadRequest();
         }
 
-        _cookbookRepository.Add(cookbook);
+        var creator = GetCookbookCreator(cookbook);
+
+        _cookbookRepository.Add(cookbook, creator);
 
         if (!_cookbookRepository.Save())
         {
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
 
-        var newCookbook = _cookbookRepository.GetSingle(cookbook.CookbookId);
+        var newCookbookDto = _mapper
+            .Map<CookbookDto>(_cookbookRepository.GetSingle(cookbook.CookbookId));
 
-        return newCookbook is null
+        return newCookbookDto is null
             ? NotFound()
             : CreatedAtAction(
                 nameof(GetCookbook),
-                new { id = newCookbook.CookbookId },
-                newCookbook);
+                new { id = newCookbookDto.CookbookId },
+                newCookbookDto);
     }
 
     [HttpPut("{id:int}", Name = nameof(UpdateCookbook))]
@@ -132,5 +136,35 @@ public class CookbooksController(
         return _cookbookRepository.Save()
             ? NoContent()
             : StatusCode(StatusCodes.Status500InternalServerError);
+    }
+
+    // Creates a CookbookMember entity for the creator of a new Cookbook.
+    // Contains permissions for all actions by default.
+    private static CookbookMember GetCookbookCreator(Cookbook cookbook)
+    {
+        var creatorId = cookbook.CreatorPersonId;
+
+        if (creatorId == null || creatorId <= 0)
+        {
+            // TODO handle error generically than this
+            throw new Exception("Cookbook creator does not have a valid Id");
+        }
+
+        var creator = new CookbookMember
+        {
+            CookbookMemberId = 0,
+            PersonId = (int)creatorId,
+            JoinDate = DateTime.UtcNow,
+            CookbookId = cookbook.CookbookId,
+            CanAddRecipe = true,
+            CanDeleteRecipe = true,
+            CanEditCookbookDetails = true,
+            CanRemoveMember = true,
+            CanSendInvite = true,
+            CanUpdateRecipe = true,
+            Cookbook = cookbook,
+        };
+
+        return creator;
     }
 }
