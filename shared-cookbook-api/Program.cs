@@ -20,9 +20,10 @@ builder.Services
 
 
 // Add services to the container.
+builder.Services.AddScoped<ICookbookInvitationRepository, CookbookInvitationRepository>();
 builder.Services.AddScoped<ICookbookRepository, CookbookRepository>();
-builder.Services.AddScoped<IRecipeRepository, RecipeRepository>();
 builder.Services.AddScoped<IPersonRepository, PersonRepository>();
+builder.Services.AddScoped<IRecipeRepository, RecipeRepository>();
 
 builder.Services.AddScoped<IValidator<AuthenticationDto>, AuthenticationDtoValidator>();
 
