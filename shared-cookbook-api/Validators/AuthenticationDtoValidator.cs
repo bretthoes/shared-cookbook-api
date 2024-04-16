@@ -7,6 +7,9 @@ public class AuthenticationDtoValidator : AbstractValidator<AuthenticationDto>
 {
     public AuthenticationDtoValidator()
     {
+        RuleFor(x => x)
+            .NotNull().WithMessage("Authentication cannot be null.");
+
         RuleFor(x => x.Email)
             .NotEmpty().WithMessage("Email is required.")
             .EmailAddress().WithMessage("Invalid email address.");

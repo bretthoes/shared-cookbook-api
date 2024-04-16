@@ -11,24 +11,16 @@ namespace SharedCookbookApi.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class PeopleController : ControllerBase
+public class PeopleController(
+    IPersonRepository personRepository,
+    IAuthService authService,
+    IMapper mapper,
+    IValidator<AuthenticationDto> validator) : ControllerBase
 {
-    private readonly IPersonRepository _personRepository;
-    private readonly IAuthService _authService;
-    private readonly IMapper _mapper;
-    private readonly IValidator<AuthenticationDto> _validator;
-
-    public PeopleController(
-        IPersonRepository personRepository,
-        IAuthService authService,
-        IMapper mapper,
-        IValidator<AuthenticationDto> validator)
-    {
-        _personRepository = personRepository;
-        _authService = authService;
-        _mapper = mapper;
-        _validator = validator;
-    }
+    private readonly IPersonRepository _personRepository = personRepository;
+    private readonly IAuthService _authService = authService;
+    private readonly IMapper _mapper = mapper;
+    private readonly IValidator<AuthenticationDto> _validator = validator;
 
     [HttpGet("{id:int}", Name = nameof(GetPerson))]
     public ActionResult<PersonDto> GetPerson(int id)

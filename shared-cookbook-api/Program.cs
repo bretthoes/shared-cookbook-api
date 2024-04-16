@@ -20,12 +20,16 @@ builder.Services
 
 
 // Add services to the container.
+
+// Add repositories
 builder.Services.AddScoped<ICookbookInvitationRepository, CookbookInvitationRepository>();
 builder.Services.AddScoped<ICookbookRepository, CookbookRepository>();
 builder.Services.AddScoped<IPersonRepository, PersonRepository>();
 builder.Services.AddScoped<IRecipeRepository, RecipeRepository>();
 
+// Add validators
 builder.Services.AddScoped<IValidator<AuthenticationDto>, AuthenticationDtoValidator>();
+builder.Services.AddScoped<IValidator<CookbookDto>, CookbookDtoValidator>();
 
 builder.Services.AddSingleton<ISeedDataService, SeedDataService>();
 builder.Services.AddSingleton<IAuthService, AuthService>();

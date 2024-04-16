@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using shared_cookbook_api.Data.Dtos;
@@ -11,10 +12,12 @@ namespace SharedCookbookApi.Controllers;
 [Route("api/[controller]")]
 public class CookbooksController(
     ICookbookRepository cookbookRepository,
-    IMapper mapper) : ControllerBase
+    IMapper mapper,
+    IValidator<CookbookDto> validator) : ControllerBase
 {
     private readonly ICookbookRepository _cookbookRepository = cookbookRepository;
     private readonly IMapper _mapper = mapper;
+    private readonly IValidator<CookbookDto> _validator = validator;
 
     [HttpGet("{id:int}", Name = nameof(GetCookbook))]
     public ActionResult<Cookbook> GetCookbook(int id)
@@ -35,16 +38,18 @@ public class CookbooksController(
     }
 
     [HttpPost(Name = nameof(AddCookbook))]
-    public ActionResult<CookbookDto> AddCookbook(Cookbook cookbook)
+    public ActionResult<CookbookDto> AddCookbook(CookbookDto cookbookDto)
     {
-        if (cookbook == null)
+        var validationResult = _validator.Validate(cookbookDto);
+        if (!validationResult.IsValid)
         {
-            return BadRequest();
+            return BadRequest(validationResult.Errors.Select(error => error.ErrorMessage));
         }
 
-        var creator = GetCookbookCreator(cookbook);
+        var cookbookToAdd = _mapper.Map<Cookbook>(cookbookDto);
+        var creator = GetCookbookCreator(cookbookToAdd);
 
-        _cookbookRepository.Add(cookbook, creator);
+        _cookbookRepository.Add(cookbookToAdd, creator);
 
         if (!_cookbookRepository.Save())
         {
@@ -52,7 +57,7 @@ public class CookbooksController(
         }
 
         var newCookbookDto = _mapper
-            .Map<CookbookDto>(_cookbookRepository.GetSingle(cookbook.CookbookId));
+            .Map<CookbookDto>(_cookbookRepository.GetSingle(cookbookToAdd.CookbookId));
 
         return newCookbookDto is null
             ? NotFound()
