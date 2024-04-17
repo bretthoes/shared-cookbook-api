@@ -147,9 +147,9 @@ public class CookbooksController(
     // Contains permissions for all actions by default.
     private static CookbookMember GetCookbookCreator(Cookbook cookbook)
     {
-        var creatorId = cookbook.CreatorPersonId;
+        var creatorId = cookbook.CreatorPersonId ?? 0;
 
-        if (creatorId == null || creatorId <= 0)
+        if (creatorId <= 0)
         {
             // TODO handle error generically than this
             throw new Exception("Cookbook creator does not have a valid Id");
@@ -158,7 +158,7 @@ public class CookbooksController(
         var creator = new CookbookMember
         {
             CookbookMemberId = 0,
-            PersonId = (int)creatorId,
+            PersonId = creatorId,
             JoinDate = DateTime.UtcNow,
             CookbookId = cookbook.CookbookId,
             CanAddRecipe = true,
