@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <InvariantGlobalization>false</InvariantGlobalization>
-    <RootNamespace>shared_cookbook_api</RootNamespace>
+    <RootNamespace>SharedCookbook.Api</RootNamespace>
     <UserSecretsId>714229ec-7258-44fd-8457-117c052593db</UserSecretsId>
   </PropertyGroup>
 
