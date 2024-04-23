@@ -1,4 +1,4 @@
-﻿namespace SharedCookbookApi.Services;
+﻿namespace SharedCookbook.Api.Services;
 
 public interface IAuthService
 {

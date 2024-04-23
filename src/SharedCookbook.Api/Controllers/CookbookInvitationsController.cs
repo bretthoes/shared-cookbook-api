@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using shared_cookbook_api.Repositories.Interfaces;
-using SharedCookbookApi.Data.Entities;
+using SharedCookbook.Api.Data.Entities;
+using SharedCookbook.Api.Repositories.Interfaces;
 
-namespace SharedCookbookApi.Controllers;
+namespace SharedCookbook.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

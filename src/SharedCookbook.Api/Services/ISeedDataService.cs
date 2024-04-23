@@ -1,6 +1,6 @@
-﻿using SharedCookbookApi.Data;
+﻿using SharedCookbook.Api.Data;
 
-namespace SharedCookbookApi.Services;
+namespace SharedCookbook.Api.Services;
 
 public interface ISeedDataService
 {

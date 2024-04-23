@@ -1,6 +1,6 @@
 ﻿using System.Security.Cryptography;
 
-namespace SharedCookbookApi.Extensions;
+namespace SharedCookbook.Api.Extensions;
 
 public static class PasswordHasherExtension
 {

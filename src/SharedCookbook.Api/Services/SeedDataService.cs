@@ -1,8 +1,7 @@
-﻿using SharedCookbookApi.Data;
-using SharedCookbookApi.Data.Entities;
-using System;
+﻿using SharedCookbook.Api.Data;
+using SharedCookbook.Api.Data.Entities;
 
-namespace SharedCookbookApi.Services;
+namespace SharedCookbook.Api.Services;
 
 public class SeedDataService : ISeedDataService
 {

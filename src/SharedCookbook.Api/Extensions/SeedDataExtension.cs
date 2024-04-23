@@ -1,10 +1,10 @@
-﻿using SharedCookbookApi.Data;
-using SharedCookbookApi.Services;
+﻿using SharedCookbook.Api.Data;
+using SharedCookbook.Api.Services;
 
-namespace SharedCookbookApi.Extensions;
+namespace SharedCookbook.Api.Extensions;
 
 public static class SeedDataExtension
-{  
+{
     public static void SeedData(this WebApplication app)
     {
         using (var scope = app.Services.CreateScope())

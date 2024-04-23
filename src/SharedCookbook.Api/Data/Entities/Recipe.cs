@@ -1,6 +1,4 @@
-﻿using shared_cookbook_api.Data.Entities;
-
-namespace SharedCookbookApi.Data.Entities;
+﻿namespace SharedCookbook.Api.Data.Entities;
 
 public class Recipe
 {
@@ -24,7 +22,7 @@ public class Recipe
 
     public int? BakingTimeInMinutes { get; set; }
 
-    public int? Servings {  get; set; }
+    public int? Servings { get; set; }
 
     public required virtual Cookbook Cookbook { get; set; }
 

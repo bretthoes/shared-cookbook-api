@@ -1,8 +1,8 @@
-﻿using shared_cookbook_api.Repositories.Interfaces;
-using SharedCookbookApi.Data;
-using SharedCookbookApi.Data.Entities;
+﻿using SharedCookbook.Api.Data;
+using SharedCookbook.Api.Data.Entities;
+using SharedCookbook.Api.Repositories.Interfaces;
 
-namespace SharedCookbookApi.Repositories;
+namespace SharedCookbook.Api.Repositories;
 
 public class PersonRepository(SharedCookbookContext context) : IPersonRepository
 {

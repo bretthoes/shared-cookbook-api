@@ -1,9 +1,9 @@
-﻿using shared_cookbook_api.Repositories.Interfaces;
-using SharedCookbookApi.Data;
-using SharedCookbookApi.Data.Entities;
+﻿using SharedCookbook.Api.Data;
+using SharedCookbook.Api.Data.Entities;
+using SharedCookbook.Api.Repositories.Interfaces;
 using System.Data;
 
-namespace SharedCookbookApi.Repositories;
+namespace SharedCookbook.Api.Repositories;
 
 public class CookbookRepository(SharedCookbookContext context) : ICookbookRepository
 {
@@ -24,7 +24,7 @@ public class CookbookRepository(SharedCookbookContext context) : ICookbookReposi
 
         return cookbooks ?? [];
     }
-    
+
     public void Add(Cookbook cookbook, CookbookMember creator)
     {
         _context.Cookbooks.Add(cookbook);

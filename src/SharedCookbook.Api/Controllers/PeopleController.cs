@@ -2,13 +2,12 @@
 using FluentValidation;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using shared_cookbook_api.Data.Dtos;
-using shared_cookbook_api.Repositories.Interfaces;
 using SharedCookbook.Api.Data.Dtos;
-using SharedCookbookApi.Data.Entities;
-using SharedCookbookApi.Services;
+using SharedCookbook.Api.Data.Entities;
+using SharedCookbook.Api.Repositories.Interfaces;
+using SharedCookbook.Api.Services;
 
-namespace SharedCookbookApi.Controllers;
+namespace SharedCookbook.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -75,8 +74,8 @@ public class PeopleController(
         return newPersonDto is null
             ? NotFound()
             : CreatedAtAction(
-                nameof(GetPerson), 
-                new { id = newPersonDto.PersonId }, 
+                nameof(GetPerson),
+                new { id = newPersonDto.PersonId },
                 newPersonDto);
     }
 
@@ -144,7 +143,7 @@ public class PeopleController(
 
         if (person is null)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError); 
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
 
         var personDto = _mapper.Map<PersonDto>(person);

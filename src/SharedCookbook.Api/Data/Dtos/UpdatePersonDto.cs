@@ -1,4 +1,4 @@
-﻿namespace shared_cookbook_api.Data.Dtos;
+﻿namespace SharedCookbook.Api.Data.Dtos;
 
 public class UpdatePersonDto
 {

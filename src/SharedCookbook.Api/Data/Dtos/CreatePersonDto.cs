@@ -1,5 +1,3 @@
-﻿using SharedCookbook.Api.Data.Dtos;
-
-namespace shared_cookbook_api.Data.Dtos;
+﻿namespace SharedCookbook.Api.Data.Dtos;
 
 public class CreatePersonDto : AuthenticationDto { }

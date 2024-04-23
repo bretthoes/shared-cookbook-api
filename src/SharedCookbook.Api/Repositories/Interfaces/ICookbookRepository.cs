@@ -1,6 +1,6 @@
-﻿using SharedCookbookApi.Data.Entities;
+﻿using SharedCookbook.Api.Data.Entities;
 
-namespace shared_cookbook_api.Repositories.Interfaces;
+namespace SharedCookbook.Api.Repositories.Interfaces;
 
 public interface ICookbookRepository
 {

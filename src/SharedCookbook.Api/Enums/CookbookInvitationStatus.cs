@@ -1,4 +1,4 @@
-﻿namespace SharedCookbookApi.Enums;
+﻿namespace SharedCookbook.Api.Enums;
 
 public enum CookbookInvitationStatus
 {

@@ -1,14 +1,14 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using shared_cookbook_api.Data.Dtos.MappingProfiles;
-using shared_cookbook_api.Repositories.Interfaces;
-using shared_cookbook_api.Validators;
-using SharedCookbookApi.Data;
-using SharedCookbookApi.Repositories;
-using SharedCookbookApi.Services;
 using Newtonsoft.Json.Serialization;
-using SharedCookbookApi.Extensions;
 using SharedCookbook.Api.Data.Dtos;
+using SharedCookbook.Api.Data.Dtos.MappingProfiles;
+using SharedCookbook.Api.Data;
+using SharedCookbook.Api.Extensions;
+using SharedCookbook.Api.Repositories.Interfaces;
+using SharedCookbook.Api.Repositories;
+using SharedCookbook.Api.Services;
+using SharedCookbook.Api.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 

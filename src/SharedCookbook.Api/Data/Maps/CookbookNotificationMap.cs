@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SharedCookbookApi.Data.Entities;
+using SharedCookbook.Api.Data.Entities;
 
 namespace SharedCookbookApi.Data.Maps;
 

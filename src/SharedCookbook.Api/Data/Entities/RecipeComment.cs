@@ -1,4 +1,4 @@
-﻿namespace SharedCookbookApi.Data.Entities;
+﻿namespace SharedCookbook.Api.Data.Entities;
 
 public class RecipeComment
 {

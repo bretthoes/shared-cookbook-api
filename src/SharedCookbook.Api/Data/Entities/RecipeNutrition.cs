@@ -1,6 +1,4 @@
-﻿using SharedCookbookApi.Data.Entities;
-
-namespace shared_cookbook_api.Data.Entities;
+﻿namespace SharedCookbook.Api.Data.Entities;
 
 public class RecipeNutrition
 {
@@ -8,7 +6,7 @@ public class RecipeNutrition
 
     public int? RecipeId { get; set; }
 
-    public int? Calories {  get; set; }
+    public int? Calories { get; set; }
 
     public int? Protein { get; set; }
 

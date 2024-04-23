@@ -1,6 +1,6 @@
-﻿using SharedCookbookApi.Extensions;
+﻿using SharedCookbook.Api.Extensions;
 
-namespace SharedCookbookApi.Services;
+namespace SharedCookbook.Api.Services;
 
 public class AuthService : IAuthService
 {

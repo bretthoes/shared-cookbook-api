@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using SharedCookbookApi.Data.Entities;
+using SharedCookbook.Api.Data.Entities;
 
-namespace shared_cookbook_api.Data.Dtos.MappingProfiles;
+namespace SharedCookbook.Api.Data.Dtos.MappingProfiles;
 
 public class PersonMappings : Profile
 {

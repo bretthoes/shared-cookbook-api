@@ -1,6 +1,6 @@
-﻿using SharedCookbookApi.Enums;
+﻿using SharedCookbook.Api.Enums;
 
-namespace SharedCookbookApi.Data.Entities;
+namespace SharedCookbook.Api.Data.Entities;
 
 public class CookbookNotification
 {

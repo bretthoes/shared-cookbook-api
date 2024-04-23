@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SharedCookbookApi.Data.Entities;
+using SharedCookbook.Api.Data.Entities;
 using SharedCookbookApi.Data.Maps;
 
-namespace SharedCookbookApi.Data;
+namespace SharedCookbook.Api.Data;
 
 public partial class SharedCookbookContext : DbContext
 {

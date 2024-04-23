@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using SharedCookbook.Api.Data.Dtos;
 
-namespace shared_cookbook_api.Validators;
+namespace SharedCookbook.Api.Validators;
 
 public class AuthenticationDtoValidator : AbstractValidator<AuthenticationDto>
 {
