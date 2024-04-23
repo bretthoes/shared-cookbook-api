@@ -2,8 +2,8 @@
 using FluentValidation;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using shared_cookbook_api.Data.Dtos;
 using shared_cookbook_api.Repositories.Interfaces;
+using SharedCookbook.Api.Data.Dtos;
 using SharedCookbookApi.Data.Entities;
 
 namespace SharedCookbookApi.Controllers;
@@ -13,11 +13,11 @@ namespace SharedCookbookApi.Controllers;
 public class CookbooksController(
     ICookbookRepository cookbookRepository,
     IMapper mapper,
-    IValidator<CookbookDto> validator) : ControllerBase
+    IValidator<CreateCookbookDto> validator) : ControllerBase
 {
     private readonly ICookbookRepository _cookbookRepository = cookbookRepository;
     private readonly IMapper _mapper = mapper;
-    private readonly IValidator<CookbookDto> _validator = validator;
+    private readonly IValidator<CreateCookbookDto> _validator = validator;
 
     [HttpGet("{id:int}", Name = nameof(GetCookbook))]
     public ActionResult<Cookbook> GetCookbook(int id)
@@ -38,7 +38,7 @@ public class CookbooksController(
     }
 
     [HttpPost(Name = nameof(AddCookbook))]
-    public ActionResult<CookbookDto> AddCookbook(CookbookDto cookbookDto)
+    public ActionResult<CookbookDto> AddCookbook(CreateCookbookDto cookbookDto)
     {
         var validationResult = _validator.Validate(cookbookDto);
         if (!validationResult.IsValid)

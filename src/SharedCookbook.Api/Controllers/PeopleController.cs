@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using shared_cookbook_api.Data.Dtos;
 using shared_cookbook_api.Repositories.Interfaces;
+using SharedCookbook.Api.Data.Dtos;
 using SharedCookbookApi.Data.Entities;
 using SharedCookbookApi.Services;
 
