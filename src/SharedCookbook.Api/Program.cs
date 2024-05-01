@@ -9,6 +9,7 @@ using SharedCookbook.Api.Repositories.Interfaces;
 using SharedCookbook.Api.Repositories;
 using SharedCookbook.Api.Services;
 using SharedCookbook.Api.Validators;
+using SharedCookbook.Api.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,13 +32,21 @@ builder.Services.AddScoped<IRecipeRepository, RecipeRepository>();
 builder.Services.AddScoped<IValidator<AuthenticationDto>, AuthenticationDtoValidator>();
 builder.Services.AddScoped<IValidator<CreateCookbookDto>, CreateCookbookDtoValidator>();
 
+// Add services
 builder.Services.AddSingleton<ISeedDataService, SeedDataService>();
 builder.Services.AddSingleton<IAuthService, AuthService>();
+
+// Add logging
+builder.Services.AddLogging(builder => builder.AddConsole());
+
+// Add handlers
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCustomCors("AllowAllOrigins");
+builder.Services.AddProblemDetails();
 
 // Add Db context
 builder.Services.AddDbContext<SharedCookbookContext>(options =>
@@ -71,7 +80,7 @@ app.UseCors("AllowAllOrigins");
 //app.UseHttpsRedirection();
 
 app.UseAuthorization();
-
 app.MapControllers();
+app.UseExceptionHandler();
 
 app.Run();
