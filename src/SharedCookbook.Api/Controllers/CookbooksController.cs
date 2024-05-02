@@ -13,11 +13,13 @@ namespace SharedCookbook.Api.Controllers;
 public class CookbooksController(
     ICookbookRepository cookbookRepository,
     IMapper mapper,
-    IValidator<CreateCookbookDto> validator) : ControllerBase
+    IValidator<CreateCookbookDto> validator,
+    ILogger<CookbooksController> logger) : ControllerBase
 {
     private readonly ICookbookRepository _cookbookRepository = cookbookRepository;
     private readonly IMapper _mapper = mapper;
     private readonly IValidator<CreateCookbookDto> _validator = validator;
+    private readonly ILogger <CookbooksController> _logger = logger;
 
     [HttpGet("{id:int}", Name = nameof(GetCookbook))]
     public ActionResult<Cookbook> GetCookbook(int id)
@@ -110,9 +112,10 @@ public class CookbooksController(
         {
             patchDoc.ApplyTo(existingCookbook);
         }
-        catch (Exception ex)
+        catch (Exception exception)
         {
-            return BadRequest($"Invalid patch document: {ex.Message}");
+            _logger.LogError(exception, "Exception occurred: {Message}", exception.Message);
+            return BadRequest();
         }
 
         if (!TryValidateModel(existingCookbook))
@@ -122,7 +125,7 @@ public class CookbooksController(
 
         var cookbook = _cookbookRepository.Update(existingCookbook);
 
-        return _cookbookRepository.Save()
+        return cookbook != null && _cookbookRepository.Save()
             ? Ok(cookbook)
             : StatusCode(StatusCodes.Status500InternalServerError);
     }
