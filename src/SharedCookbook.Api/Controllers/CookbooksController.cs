@@ -2,6 +2,7 @@
 using FluentValidation;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using SharedCookbook.Api.Data.Dtos;
 using SharedCookbook.Api.Data.Entities;
 using SharedCookbook.Api.Repositories.Interfaces;
@@ -148,14 +149,14 @@ public class CookbooksController(
 
     // Creates a CookbookMember entity for the creator of a new Cookbook.
     // Contains permissions for all actions by default.
-    private static CookbookMember GetCookbookCreator(Cookbook cookbook)
+    private CookbookMember GetCookbookCreator(Cookbook cookbook)
     {
         var creatorId = cookbook.CreatorPersonId ?? 0;
 
         if (creatorId <= 0)
         {
-            // TODO handle error generically than this
-            throw new Exception("Cookbook creator does not have a valid Id");
+            _logger.LogError("New cookbook contained invalid creatorId: {cookbook}", JsonConvert.SerializeObject(cookbook));
+            throw new ArgumentException("New cookbook contained invalid creatorId.");
         }
 
         var creator = new CookbookMember
