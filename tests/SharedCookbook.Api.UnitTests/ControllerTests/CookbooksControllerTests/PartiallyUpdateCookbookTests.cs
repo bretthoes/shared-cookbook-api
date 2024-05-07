@@ -6,155 +6,138 @@ using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using SharedCookbook.Api.Controllers;
 using SharedCookbook.Api.Data.Entities;
 using SharedCookbook.Api.Repositories.Interfaces;
+using SharedCookbook.Api.UnitTests.Attributes;
 
-namespace SharedCookbook.Api.UnitTests.ControllerTests.CookbooksControllerTests
+namespace SharedCookbook.Api.UnitTests.ControllerTests.CookbooksControllerTests;
+
+public class PartiallyUpdateCookbookTests
 {
-    public class PartiallyUpdateCookbookTests
+    [Theory, AutoMoqData]
+    public void WhenPatchDocIsNull_ThenBadRequestExpected([NoAutoProperties] CookbooksController sut)
     {
-        [Theory, AutoMoqData]
-        public void WhenPatchDocIsNull_ThenBadRequestExpected([NoAutoProperties] CookbooksController sut)
+        var actual = sut.PartiallyUpdateCookbook(It.IsAny<int>(), null!);
+
+        actual.Result.Should().BeOfType<BadRequestResult>();
+    }
+
+    [Theory, AutoMoqData]
+    public void WhenPatchDocIsEmpty_ThenBadRequestExpected([NoAutoProperties] CookbooksController sut)
+    {
+        var emptyPatchDoc = new JsonPatchDocument<Cookbook>();
+
+        var actual = sut.PartiallyUpdateCookbook(It.IsAny<int>(), emptyPatchDoc);
+
+        actual.Result.Should().BeOfType<BadRequestResult>();
+    }
+
+    [Theory, AutoMoqData]
+    public void WhenExistingCookbookNotFound_ThenNotFoundExpected(
+        [Frozen] Mock<ICookbookRepository> repositoryMock,
+        [NoAutoProperties] CookbooksController sut)
+    {
+        var patchDoc = new JsonPatchDocument<Cookbook>();
+        patchDoc.Operations.Add(new Operation<Cookbook>());
+        repositoryMock
+            .Setup(m => m.GetSingle(It.IsAny<int>()))
+            .Returns<Cookbook>(null!);
+
+        var actual = sut.PartiallyUpdateCookbook(It.IsAny<int>(), patchDoc);
+
+        actual.Result.Should().BeOfType<NotFoundResult>();
+    }
+
+    [Theory, AutoMoqData]
+    public void WhenPatchOperationInvalid_ThenBadRequestExpected([NoAutoProperties] CookbooksController sut)
+    {
+        var patchDoc = new JsonPatchDocument<Cookbook>();
+        patchDoc.Operations.Add(new Operation<Cookbook>() 
         {
-            var actual = sut.PartiallyUpdateCookbook(It.IsAny<int>(), null!);
+            op = OperationType.Invalid.ToString(),
+        });
 
-            actual.Result.Should().BeOfType<BadRequestResult>();
-        }
+        var actual = sut.PartiallyUpdateCookbook(It.IsAny<int>(), patchDoc);
 
-        [Theory, AutoMoqData]
-        public void WhenPatchDocIsEmpty_ThenBadRequestExpected([NoAutoProperties] CookbooksController sut)
+        actual.Result.Should().BeOfType<BadRequestResult>();
+    }
+
+    [Theory, AutoMoqData]
+    public void WhenPatchOperationMissingValue_ThenBadRequestExpected([NoAutoProperties] CookbooksController sut)
+    {
+        var patchDoc = new JsonPatchDocument<Cookbook>();
+        patchDoc.Operations.Add(new Operation<Cookbook>()
         {
-            var emptyPatchDoc = new JsonPatchDocument<Cookbook>();
+            op = OperationType.Replace.ToString(),
+        });
 
-            var actual = sut.PartiallyUpdateCookbook(It.IsAny<int>(), emptyPatchDoc);
+        var actual = sut.PartiallyUpdateCookbook(It.IsAny<int>(), patchDoc);
 
-            actual.Result.Should().BeOfType<BadRequestResult>();
-        }
+        actual.Result.Should().BeOfType<BadRequestResult>();
+    }
 
-        [Theory, AutoMoqData]
-        public void WhenExistingCookbookNotFound_ThenNotFoundExpected(
-            [Frozen] Mock<ICookbookRepository> repositoryMock,
-            [NoAutoProperties] CookbooksController sut)
+    [Theory, AutoMoqData]
+    public void WhenUpdateReturnsNull_ThenInternalServerErrorExpected(
+        [Frozen] Mock<IObjectModelValidator> objectValidatorMock,
+        [Frozen] Mock<ICookbookRepository> repositoryMock,
+        [NoAutoProperties] CookbooksController sut)
+    {
+        sut.ObjectValidator = objectValidatorMock.Object;
+        var patchDoc = new JsonPatchDocument<Cookbook>();
+        patchDoc.Operations.Add(new Operation<Cookbook>()
         {
-            var patchDoc = new JsonPatchDocument<Cookbook>();
-            patchDoc.Operations.Add(new Operation<Cookbook>());
-            repositoryMock
-                .Setup(m => m.GetSingle(It.IsAny<int>()))
-                .Returns<Cookbook>(null!);
+            op = OperationType.Replace.ToString(),
+            path = "/imagePath",
+            value = string.Empty,
+        });
+        repositoryMock
+            .Setup(m => m.Update(It.IsAny<Cookbook>()))
+            .Returns<Cookbook>(null!);
 
-            var actual = sut.PartiallyUpdateCookbook(It.IsAny<int>(), patchDoc);
+        var actual = sut.PartiallyUpdateCookbook(It.IsAny<int>(), patchDoc);
 
-            actual.Result.Should().BeOfType<NotFoundResult>();
-        }
+        actual.Result.As<StatusCodeResult>().StatusCode
+            .Should().Be(StatusCodes.Status500InternalServerError);
+    }
 
-        [Theory, AutoMoqData]
-        public void WhenPatchOperationInvalid_ThenBadRequestExpected([NoAutoProperties] CookbooksController sut)
+    [Theory, AutoMoqData]
+    public void WhenSaveReturnsFalse_ThenInternalServerErrorExpected(
+        [Frozen] Mock<IObjectModelValidator> objectValidatorMock,
+        [Frozen] Mock<ICookbookRepository> repositoryMock,
+        [NoAutoProperties] CookbooksController sut)
+    {
+        sut.ObjectValidator = objectValidatorMock.Object;
+        var patchDoc = new JsonPatchDocument<Cookbook>();
+        patchDoc.Operations.Add(new Operation<Cookbook>()
         {
-            var patchDoc = new JsonPatchDocument<Cookbook>();
-            patchDoc.Operations.Add(new Operation<Cookbook>() 
-            {
-                op = OperationType.Invalid.ToString(),
-            });
+            op = OperationType.Replace.ToString(),
+            path = "/imagePath",
+            value = string.Empty,
+        });
+        repositoryMock
+            .Setup(m => m.Save())
+            .Returns(false);
 
-            var actual = sut.PartiallyUpdateCookbook(It.IsAny<int>(), patchDoc);
+        var actual = sut.PartiallyUpdateCookbook(It.IsAny<int>(), patchDoc);
 
-            actual.Result.Should().BeOfType<BadRequestResult>();
-        }
+        actual.Result.As<StatusCodeResult>().StatusCode
+            .Should().Be(StatusCodes.Status500InternalServerError);
+    }
 
-        [Theory, AutoMoqData]
-        public void WhenPatchOperationMissingValue_ThenBadRequestExpected([NoAutoProperties] CookbooksController sut)
+    [Theory, AutoMoqData]
+    public void WhenRequestIsValid_ThenOkResultExpected(
+        [Frozen] Mock<IObjectModelValidator> objectValidatorMock,
+        [NoAutoProperties] CookbooksController sut)
+    {
+        sut.ObjectValidator = objectValidatorMock.Object;
+        var patchDoc = new JsonPatchDocument<Cookbook>();
+        patchDoc.Operations.Add(new Operation<Cookbook>()
         {
-            var patchDoc = new JsonPatchDocument<Cookbook>();
-            patchDoc.Operations.Add(new Operation<Cookbook>()
-            {
-                op = OperationType.Replace.ToString(),
-            });
+            op = OperationType.Replace.ToString(),
+            path = "/imagePath",
+            value = string.Empty,
+        });
 
-            var actual = sut.PartiallyUpdateCookbook(It.IsAny<int>(), patchDoc);
+        var actual = sut.PartiallyUpdateCookbook(It.IsAny<int>(), patchDoc);
 
-            actual.Result.Should().BeOfType<BadRequestResult>();
-        }
-
-        [Theory, AutoMoqData]
-        public void When_Then2(
-            [Frozen] Mock<ICookbookRepository> repositoryMock,
-            [NoAutoProperties] CookbooksController sut)
-        {
-            var objectValidatorMock = new Mock<IObjectModelValidator>();
-            objectValidatorMock
-                .Setup(m => m.Validate(
-                        It.IsAny<ActionContext>(),
-                        It.IsAny<ValidationStateDictionary>(),
-                        It.IsAny<string>(),
-                        It.IsAny<object>()));
-            sut.ObjectValidator = objectValidatorMock.Object;
-            var patchDoc = new JsonPatchDocument<Cookbook>();
-            patchDoc.Operations.Add(new Operation<Cookbook>()
-            {
-                op = OperationType.Replace.ToString(),
-                path = "/imagePath",
-                value = string.Empty,
-            });
-            repositoryMock
-                .Setup(m => m.Update(It.IsAny<Cookbook>()))
-                .Returns<Cookbook>(null!);
-
-            var actual = sut.PartiallyUpdateCookbook(It.IsAny<int>(), patchDoc);
-
-            actual.Result.As<StatusCodeResult>().StatusCode
-                .Should().Be(StatusCodes.Status500InternalServerError);
-        }
-
-        [Theory, AutoMoqData]
-        public void WhenSaveReturnsFalse_ThenInternalServerErrorExpected(
-            [Frozen] Mock<ICookbookRepository> repositoryMock,
-            [NoAutoProperties] CookbooksController sut)
-        {
-            var objectValidatorMock = new Mock<IObjectModelValidator>();
-            objectValidatorMock
-                .Setup(m => m.Validate(
-                        It.IsAny<ActionContext>(),
-                        It.IsAny<ValidationStateDictionary>(),
-                        It.IsAny<string>(),
-                        It.IsAny<object>()));
-            sut.ObjectValidator = objectValidatorMock.Object;
-            var patchDoc = new JsonPatchDocument<Cookbook>();
-            patchDoc.Operations.Add(new Operation<Cookbook>()
-            {
-                op = OperationType.Replace.ToString(),
-                path = "/imagePath",
-                value = string.Empty,
-            });
-            repositoryMock
-                .Setup(m => m.Save())
-                .Returns(false);
-
-            var actual = sut.PartiallyUpdateCookbook(It.IsAny<int>(), patchDoc);
-
-            actual.Result.As<StatusCodeResult>().StatusCode
-                .Should().Be(StatusCodes.Status500InternalServerError);
-        }
-
-        [Theory, AutoMoqData]
-        public void WhenRequestIsValid_ThenOkResultExpected([NoAutoProperties] CookbooksController sut)
-        {
-            var objectValidatorMock = new Mock<IObjectModelValidator>();
-            objectValidatorMock
-                .Setup(m => m.Validate(
-                        It.IsAny<ActionContext>(),
-                        It.IsAny<ValidationStateDictionary>(),
-                        It.IsAny<string>(),
-                        It.IsAny<object>()));
-            sut.ObjectValidator = objectValidatorMock.Object;
-            var patchDoc = new JsonPatchDocument<Cookbook>();
-            patchDoc.Operations.Add(new Operation<Cookbook>()
-            {
-                op = OperationType.Replace.ToString(),
-                path = "/imagePath",
-                value = string.Empty,
-            });
-
-            var actual = sut.PartiallyUpdateCookbook(It.IsAny<int>(), patchDoc);
-
-            actual.Result.Should().BeOfType<OkObjectResult>();
-        }
+        actual.Result.Should().BeOfType<OkObjectResult>();
     }
 }
