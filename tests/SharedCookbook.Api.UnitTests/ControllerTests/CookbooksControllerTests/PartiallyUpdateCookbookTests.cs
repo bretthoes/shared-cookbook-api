@@ -37,7 +37,7 @@ public class PartiallyUpdateCookbookTests
     {
         repositoryMock
             .Setup(m => m.GetSingle(It.IsAny<int>()))
-            .Returns(default(Cookbook));
+            .Returns<Cookbook>(null!);
 
         var actual = sut.PartiallyUpdateCookbook(It.IsAny<int>(), GetValidPatchDoc());
 
