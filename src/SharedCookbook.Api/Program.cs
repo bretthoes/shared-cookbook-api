@@ -74,11 +74,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     app.SeedData();
 }
+else if (app.Environment.IsProduction())
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseCors("AllowAllOrigins");
-// TODO uncomment this. only commented out for localhost usage
-//app.UseHttpsRedirection();
-
 app.UseAuthorization();
 app.MapControllers();
 app.UseExceptionHandler();
