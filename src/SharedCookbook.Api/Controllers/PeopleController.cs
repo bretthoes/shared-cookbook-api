@@ -52,7 +52,7 @@ public class PeopleController(
         }
 
         var person = _personRepository.GetSingleByEmail(registerDto.Email);
-        if (person != null)
+        if (person is not null)
         {
             return Conflict();
         }

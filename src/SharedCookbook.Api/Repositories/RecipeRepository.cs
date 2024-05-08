@@ -31,7 +31,7 @@ public class RecipeRepository(SharedCookbookContext context) : IRecipeRepository
     public void Delete(int id)
     {
         var recipe = GetSingle(id);
-        if (recipe != null)
+        if (recipe is not null)
         {
             _context.Recipes.Remove(recipe);
         }

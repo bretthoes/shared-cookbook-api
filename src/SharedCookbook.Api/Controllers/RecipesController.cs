@@ -34,7 +34,7 @@ public class RecipesController(
     [HttpPost(Name = nameof(AddRecipe))]
     public ActionResult<Recipe> AddRecipe(Recipe recipe)
     {
-        if (recipe == null)
+        if (recipe is null)
         {
             return BadRequest();
         }
@@ -83,7 +83,7 @@ public class RecipesController(
         int id,
         [FromBody] JsonPatchDocument<Recipe> patchDoc)
     {
-        if (patchDoc is null || patchDoc.Operations.Count == 0)
+        if (patchDoc?.Operations is null || patchDoc.Operations.Count is 0)
         {
             return BadRequest();
         }

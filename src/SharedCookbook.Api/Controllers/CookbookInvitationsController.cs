@@ -20,7 +20,7 @@ public class CookbookInvitationsController(
     {
         var invitation = _invitationRepository.GetSingle(id);
 
-        return invitation == null
+        return invitation is null
             ? NotFound()
             : Ok(invitation);
     }
@@ -36,7 +36,7 @@ public class CookbookInvitationsController(
     [HttpPost(Name = nameof(AddInvitation))]
     public ActionResult<CookbookInvitation> AddInvitation(CookbookInvitation invitation)
     {
-        if (invitation == null)
+        if (invitation is null)
         {
             return BadRequest();
         }
@@ -85,7 +85,7 @@ public class CookbookInvitationsController(
         int id,
         [FromBody] JsonPatchDocument<CookbookInvitation> patchDoc)
     {
-        if (patchDoc is null || patchDoc.Operations.Count == 0)
+        if (patchDoc?.Operations is null || patchDoc.Operations.Count is 0)
         {
             return BadRequest();
         }

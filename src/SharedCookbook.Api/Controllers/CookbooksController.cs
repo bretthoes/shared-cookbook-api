@@ -28,7 +28,7 @@ public class CookbooksController(
         var cookbookDto = _mapper
             .Map<CookbookDto>(_cookbookRepository.GetSingle(id));
 
-        return cookbookDto == null
+        return cookbookDto is null
             ? NotFound()
             : Ok(cookbookDto);
     }
@@ -101,7 +101,7 @@ public class CookbooksController(
         int id,
         [FromBody] JsonPatchDocument<CookbookDto> patchDoc)
     {
-        if (patchDoc is null || patchDoc.Operations.Count == 0)
+        if (patchDoc?.Operations is null || patchDoc.Operations.Count is 0)
         {
             return BadRequest();
         }
@@ -130,7 +130,7 @@ public class CookbooksController(
 
         var cookbook = _cookbookRepository.Update(existingCookbook);
 
-        return cookbook != null && _cookbookRepository.Save()
+        return cookbook is not null && _cookbookRepository.Save()
             ? Ok(_mapper.Map<CookbookDto>(cookbook))
             : StatusCode(StatusCodes.Status500InternalServerError);
     }
@@ -157,7 +157,7 @@ public class CookbooksController(
     {
         var creatorId = cookbook.CreatorPersonId ?? 0;
 
-        if (creatorId <= 0)
+        if (creatorId is 0 or -1)
         {
             _logger.LogError("New cookbook contained invalid creatorId: {cookbook}", JsonConvert.SerializeObject(cookbook));
             throw new ArgumentException("New cookbook contained invalid creatorId.");
