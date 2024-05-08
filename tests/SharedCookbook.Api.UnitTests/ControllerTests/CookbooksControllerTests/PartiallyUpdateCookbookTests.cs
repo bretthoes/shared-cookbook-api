@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.JsonPatch.Operations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using SharedCookbook.Api.Controllers;
+using SharedCookbook.Api.Data.Dtos;
 using SharedCookbook.Api.Data.Entities;
 using SharedCookbook.Api.Repositories.Interfaces;
 using SharedCookbook.Api.UnitTests.Attributes;
@@ -15,7 +16,7 @@ public class PartiallyUpdateCookbookTests
     [Theory, AutoMoqData]
     public void WhenPatchDocIsNull_ThenBadRequestExpected([NoAutoProperties] CookbooksController sut)
     {
-        var actual = sut.PartiallyUpdateCookbook(It.IsAny<int>(), It.IsAny<JsonPatchDocument<Cookbook>>());
+        var actual = sut.PartiallyUpdateCookbook(It.IsAny<int>(), It.IsAny<JsonPatchDocument<CookbookDto>>());
 
         actual.Result.Should().BeOfType<BadRequestResult>();
     }
@@ -23,7 +24,7 @@ public class PartiallyUpdateCookbookTests
     [Theory, AutoMoqData]
     public void WhenPatchDocIsEmpty_ThenBadRequestExpected([NoAutoProperties] CookbooksController sut)
     {
-        var emptyPatchDoc = new JsonPatchDocument<Cookbook>();
+        var emptyPatchDoc = new JsonPatchDocument<CookbookDto>();
 
         var actual = sut.PartiallyUpdateCookbook(It.IsAny<int>(), emptyPatchDoc);
 
@@ -37,7 +38,7 @@ public class PartiallyUpdateCookbookTests
     {
         repositoryMock
             .Setup(m => m.GetSingle(It.IsAny<int>()))
-            .Returns<Cookbook>(null!);
+            .Returns<CookbookDto>(null!);
 
         var actual = sut.PartiallyUpdateCookbook(It.IsAny<int>(), GetValidPatchDoc());
 
@@ -55,8 +56,8 @@ public class PartiallyUpdateCookbookTests
     [Theory, AutoMoqData]
     public void WhenPatchOperationMissingValue_ThenBadRequestExpected([NoAutoProperties] CookbooksController sut)
     {
-        var patchDoc = new JsonPatchDocument<Cookbook>();
-        patchDoc.Operations.Add(new Operation<Cookbook>()
+        var patchDoc = new JsonPatchDocument<CookbookDto>();
+        patchDoc.Operations.Add(new Operation<CookbookDto>()
         {
             op = OperationType.Replace.ToString(),
         });
@@ -75,7 +76,7 @@ public class PartiallyUpdateCookbookTests
         sut.ObjectValidator = objectValidatorMock.Object;
         repositoryMock
             .Setup(m => m.Update(It.IsAny<Cookbook>()))
-            .Returns<Cookbook>(null!);
+            .Returns<CookbookDto>(null!);
 
         var actual = sut.PartiallyUpdateCookbook(It.IsAny<int>(), GetValidPatchDoc());
 
@@ -112,10 +113,10 @@ public class PartiallyUpdateCookbookTests
         actual.Result.Should().BeOfType<OkObjectResult>();
     }
 
-    private static JsonPatchDocument<Cookbook> GetValidPatchDoc()
+    private static JsonPatchDocument<CookbookDto> GetValidPatchDoc()
     {
-        var patchDoc = new JsonPatchDocument<Cookbook>();
-        patchDoc.Operations.Add(new Operation<Cookbook>()
+        var patchDoc = new JsonPatchDocument<CookbookDto>();
+        patchDoc.Operations.Add(new Operation<CookbookDto>()
         {
             op = OperationType.Replace.ToString(),
             path = "/imagePath",
@@ -124,10 +125,10 @@ public class PartiallyUpdateCookbookTests
         return patchDoc;
     }
 
-    private static JsonPatchDocument<Cookbook> GetInvalidPatchDoc()
+    private static JsonPatchDocument<CookbookDto> GetInvalidPatchDoc()
     {
-        var patchDoc = new JsonPatchDocument<Cookbook>();
-        patchDoc.Operations.Add(new Operation<Cookbook>()
+        var patchDoc = new JsonPatchDocument<CookbookDto>();
+        patchDoc.Operations.Add(new Operation<CookbookDto>()
         {
             op = OperationType.Invalid.ToString(),
             path = "/imagePath",

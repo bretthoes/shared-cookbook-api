@@ -23,21 +23,25 @@ public class CookbooksController(
     private readonly ILogger <CookbooksController> _logger = logger;
 
     [HttpGet("{id:int}", Name = nameof(GetCookbook))]
-    public ActionResult<Cookbook> GetCookbook(int id)
+    public ActionResult<CookbookDto> GetCookbook(int id)
     {
-        var cookbook = _cookbookRepository.GetSingle(id);
+        var cookbookDto = _mapper
+            .Map<CookbookDto>(_cookbookRepository.GetSingle(id));
 
-        return cookbook == null
+        return cookbookDto == null
             ? NotFound()
-            : Ok(cookbook);
+            : Ok(cookbookDto);
     }
 
     [HttpGet("by-person/{personId}", Name = nameof(GetCookbooks))]
-    public ActionResult<List<Cookbook>> GetCookbooks(int personId)
+    public ActionResult<List<CookbookDto>> GetCookbooks(int personId)
     {
-        var cookbooks = _cookbookRepository.GetCookbooks(personId);
+        var cookbookDtos = _cookbookRepository
+            .GetCookbooks(personId)
+            .Select(_mapper.Map<CookbookDto>)
+            .ToList();
 
-        return Ok(cookbooks);
+        return Ok(cookbookDtos);
     }
 
     [HttpPost(Name = nameof(AddCookbook))]
@@ -93,9 +97,9 @@ public class CookbooksController(
     }
 
     [HttpPatch("{id:int}", Name = nameof(PartiallyUpdateCookbook))]
-    public ActionResult<Cookbook> PartiallyUpdateCookbook(
+    public ActionResult<CookbookDto> PartiallyUpdateCookbook(
         int id,
-        [FromBody] JsonPatchDocument<Cookbook> patchDoc)
+        [FromBody] JsonPatchDocument<CookbookDto> patchDoc)
     {
         if (patchDoc is null || patchDoc.Operations.Count == 0)
         {
@@ -111,7 +115,7 @@ public class CookbooksController(
 
         try
         {
-            patchDoc.ApplyTo(existingCookbook);
+            patchDoc.ApplyTo(_mapper.Map<CookbookDto>(existingCookbook));
         }
         catch (Exception exception)
         {
@@ -127,7 +131,7 @@ public class CookbooksController(
         var cookbook = _cookbookRepository.Update(existingCookbook);
 
         return cookbook != null && _cookbookRepository.Save()
-            ? Ok(cookbook)
+            ? Ok(_mapper.Map<CookbookDto>(cookbook))
             : StatusCode(StatusCodes.Status500InternalServerError);
     }
 
