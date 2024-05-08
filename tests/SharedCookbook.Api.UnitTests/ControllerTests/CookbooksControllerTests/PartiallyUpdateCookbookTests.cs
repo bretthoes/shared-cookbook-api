@@ -14,7 +14,7 @@ namespace SharedCookbook.Api.UnitTests.ControllerTests.CookbooksControllerTests;
 public class PartiallyUpdateCookbookTests
 {
     [Theory, AutoMoqData]
-    public void WhenPatchDocIsNull_ThenBadRequestExpected([NoAutoProperties] CookbooksController sut)
+    public void WhenPatchDocIsNull_ThenBadRequestExpected(CookbooksController sut)
     {
         var actual = sut.PartiallyUpdateCookbook(It.IsAny<int>(), It.IsAny<JsonPatchDocument<CookbookDto>>());
 
@@ -22,7 +22,7 @@ public class PartiallyUpdateCookbookTests
     }
 
     [Theory, AutoMoqData]
-    public void WhenPatchDocIsEmpty_ThenBadRequestExpected([NoAutoProperties] CookbooksController sut)
+    public void WhenPatchDocIsEmpty_ThenBadRequestExpected(CookbooksController sut)
     {
         var emptyPatchDoc = new JsonPatchDocument<CookbookDto>();
 
@@ -34,7 +34,7 @@ public class PartiallyUpdateCookbookTests
     [Theory, AutoMoqData]
     public void WhenExistingCookbookNotFound_ThenNotFoundExpected(
         [Frozen] Mock<ICookbookRepository> repositoryMock,
-        [NoAutoProperties] CookbooksController sut)
+        CookbooksController sut)
     {
         repositoryMock
             .Setup(m => m.GetSingle(It.IsAny<int>()))
@@ -46,7 +46,7 @@ public class PartiallyUpdateCookbookTests
     }
 
     [Theory, AutoMoqData]
-    public void WhenPatchOperationInvalid_ThenBadRequestExpected([NoAutoProperties] CookbooksController sut)
+    public void WhenPatchOperationInvalid_ThenBadRequestExpected(CookbooksController sut)
     {
         var actual = sut.PartiallyUpdateCookbook(It.IsAny<int>(), GetInvalidPatchDoc());
 
@@ -54,7 +54,7 @@ public class PartiallyUpdateCookbookTests
     }
 
     [Theory, AutoMoqData]
-    public void WhenPatchOperationMissingValue_ThenBadRequestExpected([NoAutoProperties] CookbooksController sut)
+    public void WhenPatchOperationMissingValue_ThenBadRequestExpected(CookbooksController sut)
     {
         var patchDoc = new JsonPatchDocument<CookbookDto>();
         patchDoc.Operations.Add(new Operation<CookbookDto>()
@@ -69,11 +69,9 @@ public class PartiallyUpdateCookbookTests
 
     [Theory, AutoMoqData]
     public void WhenUpdateReturnsNull_ThenInternalServerErrorExpected(
-        [Frozen] Mock<IObjectModelValidator> objectValidatorMock,
         [Frozen] Mock<ICookbookRepository> repositoryMock,
-        [NoAutoProperties] CookbooksController sut)
+        CookbooksController sut)
     {
-        sut.ObjectValidator = objectValidatorMock.Object;
         repositoryMock
             .Setup(m => m.Update(It.IsAny<Cookbook>()))
             .Returns<CookbookDto>(null!);
@@ -86,11 +84,9 @@ public class PartiallyUpdateCookbookTests
 
     [Theory, AutoMoqData]
     public void WhenSaveReturnsFalse_ThenInternalServerErrorExpected(
-        [Frozen] Mock<IObjectModelValidator> objectValidatorMock,
         [Frozen] Mock<ICookbookRepository> repositoryMock,
-        [NoAutoProperties] CookbooksController sut)
+        CookbooksController sut)
     {
-        sut.ObjectValidator = objectValidatorMock.Object;
         repositoryMock
             .Setup(m => m.Save())
             .Returns(false);
@@ -102,12 +98,8 @@ public class PartiallyUpdateCookbookTests
     }
 
     [Theory, AutoMoqData]
-    public void WhenRequestIsValid_ThenOkResultExpected(
-        [Frozen] Mock<IObjectModelValidator> objectValidatorMock,
-        [NoAutoProperties] CookbooksController sut)
+    public void WhenRequestIsValid_ThenOkResultExpected(CookbooksController sut)
     {
-        sut.ObjectValidator = objectValidatorMock.Object;
-
         var actual = sut.PartiallyUpdateCookbook(It.IsAny<int>(), GetValidPatchDoc());
 
         actual.Result.Should().BeOfType<OkObjectResult>();
