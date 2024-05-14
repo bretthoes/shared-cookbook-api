@@ -6,6 +6,8 @@ using SharedCookbook.Api.Repositories.Interfaces;
 
 namespace SharedCookbook.Api.Controllers;
 
+[ApiController]
+[Route("api/[controller]")]
 public class RecipesController(
     IRecipeRepository recipeRepository,
     IMapper mapper) : ControllerBase
@@ -24,7 +26,7 @@ public class RecipesController(
     }
 
     [HttpGet("by-cookbook/{cookbookId}", Name = nameof(GetRecipes))]
-    public ActionResult<List<Cookbook>> GetRecipes(int cookbookId)
+    public ActionResult<List<Recipe>> GetRecipes(int cookbookId)
     {
         var recipes = _recipeRepository.GetRecipes(cookbookId);
 
