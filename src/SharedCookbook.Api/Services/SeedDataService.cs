@@ -192,6 +192,9 @@ public class SeedDataService : ISeedDataService
                 Title = "Chicken Casserole",
                 Cookbook = cookbooks[0],
                 Author = people[0],
+                ImagePath = "assets/images/chicken_casserole.png",
+                PreparationTimeInMinutes = 30,
+                CookingTimeInMinutes = 30,
             },
             new()
             {
@@ -199,7 +202,9 @@ public class SeedDataService : ISeedDataService
                 CookbookId = 0,
                 Title = "Salmon Loaf",
                 Cookbook = cookbooks[0],
-                Author = people[1]
+                Author = people[1],
+                ImagePath = "assets/images/chicken_casserole.png",
+                BakingTimeInMinutes = 90
             }
         };
 
