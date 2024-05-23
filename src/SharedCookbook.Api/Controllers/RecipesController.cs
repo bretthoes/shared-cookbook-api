@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using SharedCookbook.Api.Data.Dtos;
 using SharedCookbook.Api.Data.Entities;
 using SharedCookbook.Api.Repositories.Interfaces;
 
@@ -16,13 +17,14 @@ public class RecipesController(
     private readonly IMapper _mapper = mapper;
 
     [HttpGet("{id:int}", Name = nameof(GetRecipe))]
-    public ActionResult<Cookbook> GetRecipe(int id)
+    public ActionResult<DetailedRecipeDto> GetRecipe(int id)
     {
-        var recipe = _recipeRepository.GetSingle(id);
+        var recipeDto = _mapper
+            .Map<DetailedRecipeDto>(_recipeRepository.GetSingle(id));
 
-        return recipe == null
+        return recipeDto is null
             ? NotFound()
-            : Ok(recipe);
+            : Ok(recipeDto);
     }
 
     [HttpGet("by-cookbook/{cookbookId}", Name = nameof(GetRecipes))]

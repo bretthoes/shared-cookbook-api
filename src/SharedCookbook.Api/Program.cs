@@ -56,6 +56,7 @@ builder.Services.AddDbContext<SharedCookbookContext>(options =>
 
 builder.Services.AddAutoMapper(typeof(PersonMappings));
 builder.Services.AddAutoMapper(typeof(CookbookMappings));
+builder.Services.AddAutoMapper(typeof(RecipeMappings));
 
 var app = builder.Build();
 
