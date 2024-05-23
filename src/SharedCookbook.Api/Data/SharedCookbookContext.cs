@@ -37,6 +37,8 @@ public partial class SharedCookbookContext : DbContext
 
     public virtual DbSet<RecipeRating> RecipeRatings { get; set; }
 
+    public virtual DbSet<RecipeNutrition> RecipeNutrition { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.ApplyConfiguration(new CookbookMap());
@@ -50,6 +52,7 @@ public partial class SharedCookbookContext : DbContext
         builder.ApplyConfiguration(new RecipeDirectionMap());
         builder.ApplyConfiguration(new RecipeIngredientMap());
         builder.ApplyConfiguration(new RecipeRatingMap());
+        builder.ApplyConfiguration(new RecipeNutritionMap());
 
     }
 }
