@@ -26,8 +26,6 @@ public class DetailedRecipeDto
 
     public int? Servings { get; set; }
 
-    public virtual Person? Author { get; set; }
-
     public virtual RecipeNutrition? Nutrition { get; set; }
 
     public virtual ICollection<IngredientCategory> IngredientCategories { get; set; } = [];

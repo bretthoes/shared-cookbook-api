@@ -37,7 +37,7 @@ public class RecipeNutritionMap : IEntityTypeConfiguration<RecipeNutrition>
         builder.Property(rn => rn.Sodium)
             .HasColumnName("sodium");
 
-        builder.HasOne(rn => rn.Recipe)
+        builder.HasOne<Recipe>()
         .WithOne(r => r.Nutrition)
         .HasForeignKey<RecipeNutrition>(rn => rn.RecipeId)
         .HasConstraintName("FK_recipe_nutrition__recipe_id");

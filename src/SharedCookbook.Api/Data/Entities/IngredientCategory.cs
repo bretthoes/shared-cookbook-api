@@ -7,6 +7,4 @@ public class IngredientCategory
     public required string Title { get; set; }
 
     public required int RecipeId { get; set; }
-
-    public required virtual Recipe Recipe { get; set; }
 }

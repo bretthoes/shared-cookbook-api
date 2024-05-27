@@ -20,7 +20,7 @@ public class RecipesController(
     public ActionResult<DetailedRecipeDto> GetRecipe(int id)
     {
         var recipeDto = _mapper
-            .Map<DetailedRecipeDto>(_recipeRepository.GetSingle(id));
+            .Map<DetailedRecipeDto>(_recipeRepository.GetSingleDetailed(id));
 
         return recipeDto is null
             ? NotFound()

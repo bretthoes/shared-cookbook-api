@@ -59,27 +59,27 @@ public class RecipeMap : IEntityTypeConfiguration<Recipe>
             .HasForeignKey(cn => cn.RecipeId)
             .HasConstraintName("FK_cookbook_notification__recipe_id");
         builder.HasMany(r => r.IngredientCategories)
-            .WithOne(ic => ic.Recipe)
+            .WithOne()
             .HasForeignKey(cn => cn.RecipeId)
             .HasConstraintName("FK_ingredient_category__recipe_id");
         builder.HasMany(r => r.RecipeComments)
-            .WithOne(rc => rc.Recipe)
+            .WithOne()
             .HasForeignKey(rc => rc.RecipeId)
             .HasConstraintName("FK_recipe_comment__recipe_id");
         builder.HasMany(r => r.RecipeDirections)
-            .WithOne(rd => rd.Recipe)
+            .WithOne()
             .HasForeignKey(rd => rd.RecipeId)
             .HasConstraintName("FK_recipe_direction__recipe_id");
         builder.HasMany(r => r.RecipeIngredients)
-            .WithOne(ri => ri.Recipe)
+            .WithOne()
             .HasForeignKey(ri => ri.RecipeId)
             .HasConstraintName("FK_recipe_ingredient__recipe_id");
         builder.HasMany(r => r.RecipeRatings)
-            .WithOne(rr => rr.Recipe)
+            .WithOne()
             .HasForeignKey(rr => rr.RecipeId)
             .HasConstraintName("FK_recipe_rating__recipe_id");
         builder.HasOne(r => r.Nutrition)
-            .WithOne(n => n.Recipe)
+            .WithOne()
             .HasForeignKey<RecipeNutrition>(n => n.RecipeId)
             .HasConstraintName("FK_recipe_nutrition__recipe_id");
     }

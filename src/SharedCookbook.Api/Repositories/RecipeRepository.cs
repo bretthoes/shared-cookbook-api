@@ -1,4 +1,5 @@
-﻿using SharedCookbook.Api.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using SharedCookbook.Api.Data;
 using SharedCookbook.Api.Data.Entities;
 using SharedCookbook.Api.Repositories.Interfaces;
 
@@ -11,6 +12,19 @@ public class RecipeRepository(SharedCookbookContext context) : IRecipeRepository
     public Recipe? GetSingle(int id)
     {
         return _context.Recipes.Find(id);
+    }
+
+    public Recipe? GetSingleDetailed(int id)
+    {
+        return _context.Recipes
+           .Include(r => r.Author)
+           .Include(r => r.Nutrition)
+           .Include(r => r.IngredientCategories)
+           .Include(r => r.RecipeComments)
+           .Include(r => r.RecipeDirections)
+           .Include(r => r.RecipeIngredients)
+           .Include(r => r.RecipeRatings)
+           .SingleOrDefault(r => r.RecipeId == id);
     }
 
     public List<Recipe> GetRecipes(int cookbookId)

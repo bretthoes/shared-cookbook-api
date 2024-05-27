@@ -36,11 +36,11 @@ public class RecipeRatingMap : IEntityTypeConfiguration<RecipeRating>
             .HasColumnName("created")
             .IsRequired();
 
-        builder.HasOne(rr => rr.Person)
+        builder.HasOne<Person>()
             .WithMany(p => p.RecipeRatings)
             .HasForeignKey(rr => rr.PersonId)
             .HasConstraintName("FK_recipe_rating__person_id");
-        builder.HasOne(rr => rr.Recipe)
+        builder.HasOne<Recipe>()
             .WithMany(p => p.RecipeRatings)
             .HasForeignKey(rr => rr.RecipeId)
             .HasConstraintName("FK_recipe_rating__recipe_id");

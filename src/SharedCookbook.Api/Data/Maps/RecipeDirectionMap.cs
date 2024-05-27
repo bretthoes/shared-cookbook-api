@@ -34,7 +34,7 @@ public class RecipeDirectionMap : IEntityTypeConfiguration<RecipeDirection>
             .HasMaxLength(255)
             .HasColumnName("image_path");
 
-        builder.HasOne(rd => rd.Recipe)
+        builder.HasOne<Recipe>()
             .WithMany(p => p.RecipeDirections)
             .HasForeignKey(rd => rd.RecipeId)
             .HasConstraintName("FK_recipe_direction__recipe_id");

@@ -11,6 +11,4 @@ public class RecipeIngredient
     public required int Ordinal { get; set; }
 
     public required bool Optional { get; set; }
-
-    public required virtual Recipe Recipe { get; set; }
 }

@@ -4,7 +4,7 @@ public class RecipeNutrition
 {
     public required int RecipeNutritionId { get; set; }
 
-    public int? RecipeId { get; set; }
+    public required int RecipeId { get; set; }
 
     public int? Calories { get; set; }
 
@@ -19,6 +19,4 @@ public class RecipeNutrition
     public int? Fiber { get; set; }
 
     public int? Sodium { get; set; }
-
-    public virtual Recipe? Recipe { get; set; }
 }

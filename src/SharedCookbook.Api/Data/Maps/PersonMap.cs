@@ -59,11 +59,11 @@ public class PersonMap : IEntityTypeConfiguration<Person>
             .HasForeignKey(rc => rc.PersonId)
             .HasConstraintName("FK_recipe__person_id");
         builder.HasMany(p => p.RecipeComments)
-            .WithOne(rc => rc.Author)
+            .WithOne()
             .HasForeignKey(rc => rc.PersonId)
             .HasConstraintName("FK_recipe_comment__person_id");
         builder.HasMany(p => p.RecipeRatings)
-            .WithOne(rr => rr.Person)
+            .WithOne()
             .HasForeignKey(rr => rr.PersonId)
             .HasConstraintName("FK_recipe_rating__person_id");
     }

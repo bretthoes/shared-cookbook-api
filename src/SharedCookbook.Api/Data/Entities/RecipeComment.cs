@@ -11,8 +11,4 @@ public class RecipeComment
     public required string CommentText { get; set; }
 
     public required DateTime Created { get; set; }
-
-    public required virtual Person Author { get; set; }
-
-    public required virtual Recipe Recipe { get; set; }
 }

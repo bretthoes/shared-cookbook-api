@@ -34,7 +34,7 @@ public class RecipeIngredientMap : IEntityTypeConfiguration<RecipeIngredient>
             .HasColumnName("optional")
             .IsRequired();
 
-        builder.HasOne(ri => ri.Recipe)
+        builder.HasOne<Recipe>()
             .WithMany(r => r.RecipeIngredients)
             .HasForeignKey(ri => ri.RecipeId)
             .HasConstraintName("FK_recipe_ingredient__recipe_id");

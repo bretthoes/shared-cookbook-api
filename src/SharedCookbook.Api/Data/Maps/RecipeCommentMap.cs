@@ -36,11 +36,11 @@ public class RecipeCommentMap : IEntityTypeConfiguration<RecipeComment>
             .HasColumnName("created")
             .IsRequired();
 
-        builder.HasOne(rc => rc.Author)
+        builder.HasOne<Person>()
             .WithMany(a => a.RecipeComments)
             .HasForeignKey(rc => rc.PersonId)
             .HasConstraintName("FK_recipe_comment__person_id");
-        builder.HasOne(rc => rc.Recipe)
+        builder.HasOne<Recipe>()
             .WithMany(r => r.RecipeComments)
             .HasForeignKey(rc => rc.RecipeId)
             .HasConstraintName("FK_recipe_comment__recipe_id");

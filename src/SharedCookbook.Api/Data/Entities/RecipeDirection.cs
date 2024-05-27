@@ -11,6 +11,4 @@ public class RecipeDirection
     public required int Ordinal { get; set; }
 
     public string? ImagePath { get; set; }
-
-    public required virtual Recipe Recipe { get; set; }
 }

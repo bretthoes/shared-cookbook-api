@@ -5,6 +5,7 @@ namespace SharedCookbook.Api.Repositories.Interfaces;
 public interface IRecipeRepository
 {
     Recipe? GetSingle(int id);
+    Recipe? GetSingleDetailed(int id);
     List<Recipe> GetRecipes(int cookbookId);
     void Add(Recipe recipe);
     void Delete(int id);

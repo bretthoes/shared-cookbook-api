@@ -35,6 +35,8 @@ public class SeedDataService : ISeedDataService
                 PasswordHash = "9389F2261E8E167A17C8F22224FAA22F5DB5F717447E550CE0480EE1286B392A:4B3E39CC74BABB68BEF214C931406235:50000:SHA256"
             }
         };
+        context.People.AddRange(people);
+        context.SaveChanges();
 
         var cookbooks = new List<Cookbook>
         {
@@ -43,31 +45,6 @@ public class SeedDataService : ISeedDataService
                 Title = "Brett's Cookbook",
                 Creator = people.First(),
             },
-            //new() {
-            //    CookbookId = 0,
-            //    Title = "Brett's 2nd Cookbook",
-            //    Creator = people.First(),
-            //},
-            //new() {
-            //    CookbookId = 0,
-            //    Title = "Brett's 3nd Cookbook",
-            //    Creator = people.First(),
-            //},
-            //new() {
-            //    CookbookId = 0,
-            //    Title = "Brett's 4th Cookbook",
-            //    Creator = people.First(),
-            //},
-            //new() {
-            //    CookbookId = 0,
-            //    Title = "Brett's 5th Cookbook",
-            //    Creator = people.First(),
-            //},
-            //new() {
-            //    CookbookId = 0,
-            //    Title = "Brett's 6th Cookbook",
-            //    Creator = people.First(),
-            //},
             new() {
                 CookbookId = 0,
                 Title = "Test2's Cookbook",
@@ -80,6 +57,9 @@ public class SeedDataService : ISeedDataService
             },
             }
         };
+        context.Cookbooks.AddRange(cookbooks);
+        context.SaveChanges();
+
 
         var members = new List<CookbookMember>
         {
@@ -111,77 +91,9 @@ public class SeedDataService : ISeedDataService
                 CookbookId = 0,
                 JoinDate = DateTime.Now
             },
-            //new() {
-            //    CookbookMemberId = 0,
-            //    Person = people[0],
-            //    Cookbook = cookbooks[2],
-            //    CanAddRecipe = true,
-            //    CanDeleteRecipe = true,
-            //    CanEditCookbookDetails = true,
-            //    CanRemoveMember = true,
-            //    CanSendInvite = true,
-            //    CanUpdateRecipe = true,
-            //    PersonId = 0,
-            //    CookbookId = 0,
-            //    JoinDate = DateTime.Now
-            //},
-            //new() {
-            //    CookbookMemberId = 0,
-            //    Person = people[0],
-            //    Cookbook = cookbooks[3],
-            //    CanAddRecipe = true,
-            //    CanDeleteRecipe = true,
-            //    CanEditCookbookDetails = true,
-            //    CanRemoveMember = true,
-            //    CanSendInvite = true,
-            //    CanUpdateRecipe = true,
-            //    PersonId = 0,
-            //    CookbookId = 0,
-            //    JoinDate = DateTime.Now
-            //},
-            //new() {
-            //    CookbookMemberId = 0,
-            //    Person = people[0],
-            //    Cookbook = cookbooks[4],
-            //    CanAddRecipe = true,
-            //    CanDeleteRecipe = true,
-            //    CanEditCookbookDetails = true,
-            //    CanRemoveMember = true,
-            //    CanSendInvite = true,
-            //    CanUpdateRecipe = true,
-            //    PersonId = 0,
-            //    CookbookId = 0,
-            //    JoinDate = DateTime.Now
-            //},
-            //new() {
-            //    CookbookMemberId = 0,
-            //    Person = people[0],
-            //    Cookbook = cookbooks[5],
-            //    CanAddRecipe = true,
-            //    CanDeleteRecipe = true,
-            //    CanEditCookbookDetails = true,
-            //    CanRemoveMember = true,
-            //    CanSendInvite = true,
-            //    CanUpdateRecipe = true,
-            //    PersonId = 0,
-            //    CookbookId = 0,
-            //    JoinDate = DateTime.Now
-            //},
-            //new() {
-            //    CookbookMemberId = 0,
-            //    Person = people[1],
-            //    Cookbook = cookbooks[6],
-            //    CanAddRecipe = true,
-            //    CanDeleteRecipe = true,
-            //    CanEditCookbookDetails = true,
-            //    CanRemoveMember = true,
-            //    CanSendInvite = true,
-            //    CanUpdateRecipe = true,
-            //    PersonId = 0,
-            //    CookbookId = 0,
-            //    JoinDate = DateTime.Now
-            //}
         };
+        context.CookbookMembers.AddRange(members);
+        context.SaveChanges();
 
         var recipes = new List<Recipe>
         {
@@ -207,13 +119,15 @@ public class SeedDataService : ISeedDataService
                 BakingTimeInMinutes = 90
             }
         };
+        context.Recipes.AddRange(recipes);
+        context.SaveChanges();
 
         var nutritions = new List<RecipeNutrition>()
         {
             new()
             {
                 RecipeNutritionId = 0,
-                Recipe = recipes[0],
+                RecipeId = recipes[0].RecipeId,
                 Calories = 160,
                 Protein = 14,
                 Fat = 8,
@@ -221,37 +135,36 @@ public class SeedDataService : ISeedDataService
                 Sodium = 60,
             }
         };
+        context.RecipeNutrition.AddRange(nutritions);
+        context.SaveChanges();
 
         var ratings = new List<RecipeRating>() 
         {
             new()
             { 
                 RecipeRatingId = 0,
-                Recipe = recipes[0],
                 RecipeId = recipes[0].RecipeId,
                 RatingValue = 5,
                 Created = DateTime.Now,
-                Person = people[1],
                 PersonId = people[1].PersonId
             },
             new()
             {
                 RecipeRatingId = 0,
-                Recipe = recipes[0],
                 RecipeId = recipes[0].RecipeId,
                 RatingValue = 4,
                 Created = DateTime.Now,
-                Person = people[1],
                 PersonId = people[1].PersonId
             }
         };
+        context.RecipeRatings.AddRange(ratings);
+        context.SaveChanges();
 
         var ingredients = new List<RecipeIngredient>()
         {
             new()
             {
                 RecipeIngredientId = 0,
-                Recipe = recipes[0],
                 RecipeId = recipes[0].RecipeId,
                 IngredientName = "1 can salmon",
                 Ordinal = 1,
@@ -260,7 +173,6 @@ public class SeedDataService : ISeedDataService
             new()
             {
                 RecipeIngredientId = 0,
-                Recipe = recipes[0],
                 RecipeId = recipes[0].RecipeId,
                 IngredientName = "1/2 cup crushed saltine crackers",
                 Ordinal = 2,
@@ -269,7 +181,6 @@ public class SeedDataService : ISeedDataService
             new()
             {
                 RecipeIngredientId = 0,
-                Recipe = recipes[0],
                 RecipeId = recipes[0].RecipeId,
                 IngredientName = "1/2 cup milk",
                 Ordinal = 3,
@@ -278,7 +189,6 @@ public class SeedDataService : ISeedDataService
             new()
             {
                 RecipeIngredientId = 0,
-                Recipe = recipes[0],
                 RecipeId = recipes[0].RecipeId,
                 IngredientName = "1 large egg, beaten",
                 Ordinal = 4,
@@ -287,7 +197,6 @@ public class SeedDataService : ISeedDataService
             new()
             {
                 RecipeIngredientId = 0,
-                Recipe = recipes[0],
                 RecipeId = recipes[0].RecipeId,
                 IngredientName = "2 tablespoons melted butter",
                 Ordinal = 5,
@@ -296,20 +205,20 @@ public class SeedDataService : ISeedDataService
             new()
             {
                 RecipeIngredientId = 0,
-                Recipe = recipes[0],
                 RecipeId = recipes[0].RecipeId,
                 IngredientName = "salt and pepper to taste",
                 Ordinal = 6,
                 Optional = true,
             }
         };
+        context.RecipeIngredients.AddRange(ingredients);
+        context.SaveChanges();
 
         var directions = new List<RecipeDirection>() 
         {
             new()
             {
                 RecipeDirectionId = 0,
-                Recipe = recipes[0],
                 RecipeId = recipes[0].RecipeId,
                 Ordinal = 1,
                 ImagePath = null,
@@ -318,7 +227,6 @@ public class SeedDataService : ISeedDataService
             new()
             {
                 RecipeDirectionId = 0,
-                Recipe = recipes[0],
                 RecipeId = recipes[0].RecipeId,
                 Ordinal = 2,
                 ImagePath = null,
@@ -327,7 +235,6 @@ public class SeedDataService : ISeedDataService
             new()
             {
                 RecipeDirectionId = 0,
-                Recipe = recipes[0],
                 RecipeId = recipes[0].RecipeId,
                 Ordinal = 3,
                 ImagePath = null,
@@ -336,22 +243,14 @@ public class SeedDataService : ISeedDataService
             new()
             {
                 RecipeDirectionId = 0,
-                Recipe = recipes[0],
                 RecipeId = recipes[0].RecipeId,
                 Ordinal = 4,
                 ImagePath = null,
                 DirectionText = "Bake in the preheated oven for 45 minutes or until done.",
             }
         };
-
-        context.People.AddRange(people);
-        context.Cookbooks.AddRange(cookbooks);
-        context.CookbookMembers.AddRange(members);
-        context.Recipes.AddRange(recipes);
-        context.RecipeNutrition.AddRange(nutritions);
-        context.RecipeRatings.AddRange(ratings);
-        context.RecipeIngredients.AddRange(ingredients);
         context.RecipeDirections.AddRange(directions);
+        context.SaveChanges();
     }
 }
 
