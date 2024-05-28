@@ -17,7 +17,6 @@ public class RecipeRepository(SharedCookbookContext context) : IRecipeRepository
     public Recipe? GetSingleDetailed(int id)
     {
         return _context.Recipes
-           .Include(r => r.Author)
            .Include(r => r.Nutrition)
            .Include(r => r.IngredientCategories)
            .Include(r => r.RecipeComments)
