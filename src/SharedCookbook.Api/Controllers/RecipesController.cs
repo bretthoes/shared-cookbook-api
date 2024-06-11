@@ -28,11 +28,14 @@ public class RecipesController(
     }
 
     [HttpGet("by-cookbook/{cookbookId}", Name = nameof(GetRecipes))]
-    public ActionResult<List<Recipe>> GetRecipes(int cookbookId)
+    public ActionResult<List<RecipeDto>> GetRecipes(int cookbookId)
     {
-        var recipes = _recipeRepository.GetRecipes(cookbookId);
+        var recipesDtos = _recipeRepository
+            .GetRecipes(cookbookId)
+            .Select(_mapper.Map<RecipeDto>)
+            .ToList();
 
-        return Ok(recipes);
+        return Ok(recipesDtos);
     }
 
     [HttpPost(Name = nameof(AddRecipe))]

@@ -30,7 +30,8 @@ public class RecipeRepository(SharedCookbookContext context) : IRecipeRepository
     {
         var recipes = _context.Recipes
             .Where(r => r.CookbookId == cookbookId)
-            .OrderBy(r => r.Title)
+            .Include(r => r.Author)
+            .Include(r => r.RecipeRatings)
             .ToList();
 
         return recipes ?? [];
