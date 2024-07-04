@@ -6,5 +6,5 @@ public class CreateCookbookDto
 
     public required string Title { get; set; }
 
-    public required string ImagePath { get; set; }
+    public required IFormFile Cover { get; set; }
 }

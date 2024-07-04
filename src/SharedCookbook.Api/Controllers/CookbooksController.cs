@@ -13,6 +13,7 @@ namespace SharedCookbook.Api.Controllers;
 [Route("api/[controller]")]
 public class CookbooksController(
     ICookbookRepository cookbookRepository,
+    IWebHostEnvironment hostingEnvironment,
     IMapper mapper,
     IValidator<CreateCookbookDto> validator,
     ILogger<CookbooksController> logger) : ControllerBase
@@ -45,7 +46,7 @@ public class CookbooksController(
     }
 
     [HttpPost(Name = nameof(AddCookbook))]
-    public ActionResult<CookbookDto> AddCookbook(CreateCookbookDto cookbookDto)
+    public ActionResult<CookbookDto> AddCookbook([FromForm] CreateCookbookDto cookbookDto)
     {
         var validationResult = _validator.Validate(cookbookDto);
         if (!validationResult.IsValid)
@@ -53,9 +54,31 @@ public class CookbooksController(
             return BadRequest(validationResult.Errors.Select(error => error.ErrorMessage));
         }
 
-        var cookbookToAdd = _mapper.Map<Cookbook>(cookbookDto);
-        var creator = GetCookbookCreator(cookbookToAdd);
+        // Save the cover image file
+        var coverImagePath = "";
+        if (cookbookDto.Cover != null)
+        {
+            var uploadsFolder = Path.Combine(hostingEnvironment.WebRootPath, "uploads");
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
 
+            var uniqueFileName = Guid.NewGuid().ToString() + "_" + cookbookDto.Cover.FileName;
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                cookbookDto.Cover.CopyTo(fileStream);
+            }
+
+            coverImagePath = "/uploads/" + uniqueFileName;
+        }
+
+        var cookbookToAdd = _mapper.Map<Cookbook>(cookbookDto);
+        cookbookToAdd.ImagePath = coverImagePath;
+
+        var creator = GetCookbookCreator(cookbookToAdd);
         _cookbookRepository.Add(cookbookToAdd, creator);
 
         if (!_cookbookRepository.Save())
@@ -93,7 +116,7 @@ public class CookbooksController(
 
         return _cookbookRepository.Save()
             ? NoContent()
-            : StatusCode(StatusCodes.Status500InternalServerError);
+        : StatusCode(StatusCodes.Status500InternalServerError);
     }
 
     [HttpPatch("{id:int}", Name = nameof(PartiallyUpdateCookbook))]
