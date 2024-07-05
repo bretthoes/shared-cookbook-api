@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using SharedCookbook.Api.Data.Dtos;
 using SharedCookbook.Api.Data.Entities;
 using SharedCookbook.Api.Repositories.Interfaces;
+using SharedCookbook.Api.Services;
 
 namespace SharedCookbook.Api.Controllers;
 
@@ -13,7 +14,7 @@ namespace SharedCookbook.Api.Controllers;
 [Route("api/[controller]")]
 public class CookbooksController(
     ICookbookRepository cookbookRepository,
-    IWebHostEnvironment hostingEnvironment,
+    IBucketService bucketService,
     IMapper mapper,
     IValidator<CreateCookbookDto> validator,
     ILogger<CookbooksController> logger) : ControllerBase
@@ -46,7 +47,7 @@ public class CookbooksController(
     }
 
     [HttpPost(Name = nameof(AddCookbook))]
-    public ActionResult<CookbookDto> AddCookbook([FromForm] CreateCookbookDto cookbookDto)
+    public async Task<ActionResult<CookbookDto>> AddCookbook([FromForm] CreateCookbookDto cookbookDto)
     {
         var validationResult = _validator.Validate(cookbookDto);
         if (!validationResult.IsValid)
@@ -55,24 +56,11 @@ public class CookbooksController(
         }
 
         // Save the cover image file
-        var coverImagePath = "";
-        if (cookbookDto.Cover != null)
+        var coverImagePath = await bucketService.UploadFile(cookbookDto.Cover);
+
+        if (string.IsNullOrWhiteSpace(coverImagePath))
         {
-            var uploadsFolder = Path.Combine(hostingEnvironment.WebRootPath, "uploads");
-            if (!Directory.Exists(uploadsFolder))
-            {
-                Directory.CreateDirectory(uploadsFolder);
-            }
-
-            var uniqueFileName = Guid.NewGuid().ToString() + "_" + cookbookDto.Cover.FileName;
-            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                cookbookDto.Cover.CopyTo(fileStream);
-            }
-
-            coverImagePath = "/uploads/" + uniqueFileName;
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
 
         var cookbookToAdd = _mapper.Map<Cookbook>(cookbookDto);
