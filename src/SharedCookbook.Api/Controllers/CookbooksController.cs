@@ -20,6 +20,8 @@ public class CookbooksController(
     ILogger<CookbooksController> logger) : ControllerBase
 {
     private readonly ICookbookRepository _cookbookRepository = cookbookRepository;
+
+    private readonly IBucketService _bucketService = bucketService;
     private readonly IMapper _mapper = mapper;
     private readonly IValidator<CreateCookbookDto> _validator = validator;
     private readonly ILogger <CookbooksController> _logger = logger;
@@ -56,7 +58,7 @@ public class CookbooksController(
         }
 
         // Save the cover image file
-        var coverImagePath = await bucketService.UploadFile(cookbookDto.Cover);
+        var coverImagePath = await _bucketService.UploadFile(cookbookDto.Cover);
 
         if (string.IsNullOrWhiteSpace(coverImagePath))
         {
