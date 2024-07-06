@@ -10,18 +10,15 @@ using SharedCookbook.Api.Repositories;
 using SharedCookbook.Api.Services;
 using SharedCookbook.Api.Validators;
 using SharedCookbook.Api.Handlers;
-using Amazon.S3;
 using SharedCookbook.Api.Data.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add config
-builder.Configuration.Sources.Clear();
 builder.Configuration
-    .AddUserSecrets<Program>()
     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true)
-    .AddEnvironmentVariables();
+    .AddUserSecrets<Program>();
 
 builder.Services.Configure<BucketOptions>(
     builder.Configuration.GetSection(key: nameof(BucketOptions)));
@@ -41,10 +38,9 @@ builder.Services.AddScoped<IValidator<AuthenticationDto>, AuthenticationDtoValid
 builder.Services.AddScoped<IValidator<CreateCookbookDto>, CreateCookbookDtoValidator>();
 
 // Add services
-builder.Services.AddSingleton<ISeedDataService, SeedDataService>();
-builder.Services.AddSingleton<IAuthService, AuthService>();
-builder.Services.AddSingleton<IBucketService, BucketService>();
-builder.Services.AddAWSService<IAmazonS3>();
+builder.Services.AddScoped<ISeedDataService, SeedDataService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IBucketService, BucketService>();
 
 // Add logging
 builder.Services.AddLogging(builder => builder.AddConsole());

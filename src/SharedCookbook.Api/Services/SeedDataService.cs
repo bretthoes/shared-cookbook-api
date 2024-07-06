@@ -54,7 +54,13 @@ public class SeedDataService : ISeedDataService
                 Email = "test2@test.com",
                 ImagePath = null,
                 PasswordHash = "9389F2261E8E167A17C8F22224FAA22F5DB5F717447E550CE0480EE1286B392A:4B3E39CC74BABB68BEF214C931406235:50000:SHA256"
+                },
             },
+            new() {
+                CookbookId = 0,
+                Title = "new",
+                ImagePath = "a3449a45-3cb9-494e-bd69-21c04784b357spongebob_todo.jpg",
+                Creator = people.First()
             }
         };
         context.Cookbooks.AddRange(cookbooks);

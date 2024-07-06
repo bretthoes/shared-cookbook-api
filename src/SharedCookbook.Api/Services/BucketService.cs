@@ -1,3 +1,5 @@
+using Amazon;
+using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Transfer;
 using Microsoft.Extensions.Options;
@@ -5,7 +7,7 @@ using SharedCookbook.Api.Data.Options;
 
 namespace SharedCookbook.Api.Services;
 
-public class BucketService(IAmazonS3 client,
+public class BucketService(
     IOptions<BucketOptions> options,
     ILogger<BucketService> logger) : IBucketService
 {
@@ -18,7 +20,7 @@ public class BucketService(IAmazonS3 client,
                 throw new ArgumentException("File to upload cannot be null or empty.");
             }
 
-            var uniqueFileName = Guid.NewGuid().ToString();
+            var uniqueFileName = Guid.NewGuid().ToString() + fileToUpload.FileName;
 
             using var newMemoryStream = new MemoryStream();
             fileToUpload.CopyTo(newMemoryStream);
@@ -31,7 +33,11 @@ public class BucketService(IAmazonS3 client,
                 CannedACL = S3CannedACL.PublicRead
             };
 
-            var fileTransferUtility = new TransferUtility(client);
+            // TODO inject client into service
+            var credentials = new BasicAWSCredentials(options.Value.AwsAccessKeyId, options.Value.AwsSecretAccessKey);
+            using var client = new AmazonS3Client(credentials, RegionEndpoint.USEast2);
+
+            using var fileTransferUtility = new TransferUtility(client);
             await fileTransferUtility.UploadAsync(uploadRequest);
 
             return uniqueFileName;
