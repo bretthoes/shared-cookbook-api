@@ -20,7 +20,15 @@ public class BucketService(
                 throw new ArgumentException("File to upload cannot be null or empty.");
             }
 
-            var uniqueFileName = Guid.NewGuid().ToString() + fileToUpload.FileName;
+
+            // TODO refactor to utility
+            var extension = Path.GetExtension(fileToUpload.FileName).ToLower();
+            if (extension != ".jpg" && extension != ".png" && extension != ".jpeg")
+            {
+                throw new ArgumentException("Only JPG and PNG files are allowed.");
+            }
+
+            var uniqueFileName = Guid.NewGuid().ToString() + extension;
 
             using var newMemoryStream = new MemoryStream();
             fileToUpload.CopyTo(newMemoryStream);
