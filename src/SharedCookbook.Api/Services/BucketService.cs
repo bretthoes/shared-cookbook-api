@@ -28,15 +28,13 @@ public class BucketService(
                 throw new ArgumentException("Only JPG and PNG files are allowed.");
             }
 
-            var uniqueFileName = Guid.NewGuid().ToString() + extension;
-
             using var newMemoryStream = new MemoryStream();
             fileToUpload.CopyTo(newMemoryStream);
 
             var uploadRequest = new TransferUtilityUploadRequest
             {
                 InputStream = newMemoryStream,
-                Key = uniqueFileName,
+                Key = fileToUpload.Name,
                 BucketName = options.Value.BucketName,
                 CannedACL = S3CannedACL.PublicRead
             };
@@ -48,7 +46,7 @@ public class BucketService(
             using var fileTransferUtility = new TransferUtility(client);
             await fileTransferUtility.UploadAsync(uploadRequest);
 
-            return uniqueFileName;
+            return fileToUpload.Name;
         }
         catch (Exception e) 
         {

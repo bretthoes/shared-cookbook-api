@@ -97,6 +97,20 @@ public class SeedDataService : ISeedDataService
                 CookbookId = 0,
                 JoinDate = DateTime.Now
             },
+            new() {
+                CookbookMemberId = 0,
+                Person = people[0],
+                Cookbook = cookbooks[2],
+                CanAddRecipe = true,
+                CanDeleteRecipe = true,
+                CanEditCookbookDetails = true,
+                CanRemoveMember = true,
+                CanSendInvite = true,
+                CanUpdateRecipe = true,
+                PersonId = 0,
+                CookbookId = 0,
+                JoinDate = DateTime.Now
+            },
         };
         context.CookbookMembers.AddRange(members);
         context.SaveChanges();
