@@ -46,7 +46,7 @@ public class BucketService(
             using var fileTransferUtility = new TransferUtility(client);
             await fileTransferUtility.UploadAsync(uploadRequest);
 
-            return fileToUpload.Name;
+            return fileToUpload.FileName;
         }
         catch (Exception e) 
         {
