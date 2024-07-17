@@ -14,11 +14,13 @@ namespace SharedCookbook.Api.Controllers;
 public class PeopleController(
     IPersonRepository personRepository,
     IAuthService authService,
+    IBucketService bucketService,
     IMapper mapper,
     IValidator<AuthenticationDto> validator) : ControllerBase
 {
     private readonly IPersonRepository _personRepository = personRepository;
     private readonly IAuthService _authService = authService;
+    private readonly IBucketService _bucketService = bucketService;
     private readonly IMapper _mapper = mapper;
     private readonly IValidator<AuthenticationDto> _validator = validator;
 
@@ -40,6 +42,15 @@ public class PeopleController(
         return person is null
             ? NotFound()
             : Ok(_mapper.Map<PersonDto>(person));
+    }
+
+    [HttpPost(Name = nameof(AddPersonImage))]
+    public async Task<ActionResult<Guid>> AddPersonImage(CreatePersonDto registerDto)
+    {
+        // TODO upload the image to S3, return the id. then if the user saves, simply use the existing patch to update the image path we return here.
+        // make dto with just personId and IFormFile
+        // return just the guid that will be the image Id, or a string that is the Guid.extension of the img
+        return NotFound();
     }
 
     [HttpPost(Name = nameof(AddPerson))]
